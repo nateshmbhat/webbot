@@ -63,7 +63,6 @@ class Browser:
                 if(element.id in id_sets):
                     ''' No need to call the max method if the method call is ordered from most specific to least specific which naturally has the max score if the element is already present '''
                     self.element_to_score[element] = max(self.element_to_score[element] , score ) ; 
-                
                 else:
                     self.element_to_score[element] = score ; 
                 
@@ -71,12 +70,27 @@ class Browser:
 
 
         add_to_init_text_matches_score(self.driver.find_elements_by_xpath("//body/*[text()='{}']".format(text)) , score=15 ) ;
+        add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(text)) , score=13 ) ;
 
         add_to_init_text_matches_score(self.driver.find_elements_by_xpath("//body/*[contains(text() , {})]".format(text)) , score=10)
 
         add_to_init_text_matches_score(self.driver.find_elements_by_xpath("//body/*[contains(translate(text() , {} , {} ) , {})]".format(text.upper() , text.lower() , text.lower())) ,score=7) ; 
 
-        print(self.element_to_score)
+
+        for element in self.element_to_score.keys():
+            score = self.element_to_score.get(element) ; 
+
+            # Check ID > score+= 30
+            if(id and id==element.get_attribute('id')):
+                score += 30
+
+            #Check Class > score+=20
+            if(classname and classname==element.get_attribute('class')):
+                score+=20 
+
+            #Check element tag and check for button or anchor  or input or textarea
+            
+            
 
 
 
@@ -91,7 +105,6 @@ class Browser:
 
     def click(self , text='' , type = "button" , tag='', id ='' , classname ='',  number = 1 , css_selector='' , xpath=''):
         element = self.__find_element__(text , type , tag , classname , id , number , css_selector , xpath) 
-
 
 
     def write(self , into=None):
