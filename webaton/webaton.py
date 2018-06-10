@@ -1,6 +1,8 @@
 from selenium import webdriver ;
 from collections import OrderedDict
 from selenium.common import exceptions
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 from time import sleep 
 import sys , argparse , os  
 
@@ -20,7 +22,7 @@ class Browser:
 
     def __find_element__(self , text , tag , classname , id , number ,css_selector , xpath , match_level): 
    
-        self.element_to_score = {} ; 
+        self.element_to_score = OrderedDict()
         self.element_to_score_id_set = set();
 
         def add_to_init_text_matches_score(text_matches_elements : list , score :int )->None:
@@ -28,7 +30,7 @@ class Browser:
 
             for element in text_matches_elements:
 
-                if(not element.is_displayed):
+                if (not element.is_displayed) or (element.get_attribute('hidden')=='true') or (element.tag_name=='input' and element.get_attribute('type')=='hidden'):
                     continue ; 
 
                 if(element.id in self.element_to_score_id_set):
@@ -66,6 +68,28 @@ class Browser:
 
                 except exceptions.NoSuchElementException as E:
                     print("Exception : {}".format(E)) ;
+                
+
+
+        def handle_input_tag():
+            if(text):
+                add_to_init_text_matches_score_from_xpath(("//body//input[@value='{}']".format(text)) , score=45 )
+                add_to_init_text_matches_score_from_xpath(("//body//input[@placeholder='{}']".format(text)) , score=45 )
+
+                find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[text()='{}']".format(text)) , score =45)
+
+                add_to_init_text_matches_score_from_xpath(("//body//input[contains( @value , '{}')]".format(text)) , score=37 )
+                add_to_init_text_matches_score_from_xpath(("//body//input[contains( @placeholder , '{}')]".format(text)) , score=37 )
+                find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains( text() , '{}')]".format(text)) , score=37 )
+
+                add_to_init_text_matches_score_from_xpath(("//body//input[contains(translate( @value , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
+                add_to_init_text_matches_score_from_xpath(("//body//input[contains(translate( @placeholder , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
+
+                find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains(translate( text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
+
+            else:
+                add_to_init_text_matches_score_from_xpath("//body//{}".format(tag) , score=40) ; 
+
 
 
         if tag:
@@ -83,22 +107,8 @@ class Browser:
 
 
         if(tag=='input'):
-            add_to_init_text_matches_score_from_xpath(("//body//input[@value='{}']".format(text)) , score=45 )
-            add_to_init_text_matches_score_from_xpath(("//body//input[@placeholder='{}']".format(text)) , score=45 )
-
-            find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[text()='{}']".format(text)) , score =45)
-
-            add_to_init_text_matches_score_from_xpath(("//body//input[contains( @value , '{}')]".format(text)) , score=37 )
-            add_to_init_text_matches_score_from_xpath(("//body//input[contains( @placeholder , '{}')]".format(text)) , score=37 )
-            find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains( text() , '{}')]".format(text)) , score=37 )
-
-            add_to_init_text_matches_score_from_xpath(("//body//input[contains(translate( @value , '{}' , '{}' ) , {})]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
-            add_to_init_text_matches_score_from_xpath(("//body//input[contains(translate( @placeholder , '{}' , '{}' ) , {})]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
-
-
-            find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains(translate( text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
-
-
+            handle_input_tag()
+            
 
         if(tag=='button'):
 
@@ -111,21 +121,21 @@ class Browser:
             add_to_init_text_matches_score_from_xpath(("//body//button//*[contains(text() , '{}')]".format(text)) , score=37 )
 
             add_to_init_text_matches_score_from_xpath(("//body//button[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
-            add_to_init_text_matches_score_from_xpath(("//body//button//*[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
+            add_to_init_text_matches_score_from_xpath(("//body//button//*[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33);
 
 
+            if(len(self.element_to_score.keys())==0):
+                handle_input_tag() 
 
 
+        # if(match_level=='loose'):
+        #     add_to_init_text_matches_score_from_xpath("//body//*[@value='{}']".format(text) , score=30 ) ;
+        #     add_to_init_text_matches_score_from_xpath("//body//*[text()='{}']".format(text) , score=30 ) ;
 
 
-        if(match_level=='loose'):
-            add_to_init_text_matches_score_from_xpath("//body//*[@value='{}']".format(text) , score=30 ) ;
-            add_to_init_text_matches_score_from_xpath("//body//*[text()='{}']".format(text) , score=30 ) ;
+        #     add_to_init_text_matches_score_from_xpath(("//body//*[contains(text() , '{}')]".format(text)) , score=27 )
 
-
-            add_to_init_text_matches_score_from_xpath(("//body//*[contains(text() , '{}')]".format(text)) , score=27 )
-
-            add_to_init_text_matches_score_from_xpath(("//body//*[contains(translate(text() , '{}' , '{}' ) , '{}' )]".format(text.upper() , text.lower() , text.lower())) ,score=25) ; 
+        #     add_to_init_text_matches_score_from_xpath(("//body//*[contains(translate(text() , '{}' , '{}' ) , '{}' )]".format(text.upper() , text.lower() , text.lower())) ,score=25) ; 
                             
 
 
@@ -158,17 +168,12 @@ class Browser:
         self._max_score_ = max_score
 
         print("\n\nMax SCORES " , max_scored_elements) ; 
-
-        if(len(max_scored_elements)):
-            return max_scored_elements[0] if (len(max_scored_elements)<=number) else max_scored_elements[number]
-
-
-        print("No element found !") ; 
-        raise exceptions.NoSuchElementException('Element not found ! ') ; 
+        return (self._max_score_elements_ ) ; 
 
 
     def go_back(self):
         self.driver.back() ;
+
 
 
     def go_to(self , url):
@@ -176,18 +181,31 @@ class Browser:
 
 
 
-    def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
-        element = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , match_level) 
-        element.click() ; 
+    def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose'):
+        maxElements = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , match_level)
+        for element in maxElements:
+            try:
+                element.click() ; 
+
         
 
-    def type(self , text , into , clear = True , tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
-        element = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , match_level)
+
+    def type(self , text , into ='' , clear = True , tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
+        maxElement = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , match_level)
+
+        
+
+
+
+
         if(clear):
             element.clear() 
         element.send_keys(text)
         
-        pass;
+
+    def select_tab(self , number):
+        self.driver.find_element_by_css_selector("body").send_keys(Keys.CONTROL + 2);
+
 
 
 
@@ -197,7 +215,8 @@ class Chrome:
 
 if(__name__=='__main__'):
     aton = Browser() ; 
-    aton.go_to('http://daedalcrafters.pythonanywhere.com') 
-    # aton.type("hello" , 'Username')
+    # aton.go_to('http://daedalcrafters.pythonanywhere.com') 
+    aton.go_to('https://google.com')
+    aton.type("hello" )
     # aton.type("itsme" , 'Password')
-    aton.click('login' , tag='button')
+    aton.click('Google Search' , tag='button')
