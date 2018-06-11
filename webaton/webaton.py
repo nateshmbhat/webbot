@@ -7,6 +7,7 @@ from time import sleep
 import sys , argparse , os  
 
 
+
 class Browser:
 
     def __init__(self , showWindow = False ):
@@ -17,6 +18,7 @@ class Browser:
         driverfilename = "chrome_linux" if  os.name=='posix' else "chrome_windows.exe" if os.name=='nt' else "chrome_mac" ; 
         driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
         self.driver = webdriver.Chrome(executable_path=driverpath , chrome_options=options)
+        self.key = Keys ; 
     
 
 
@@ -30,12 +32,22 @@ class Browser:
 
             for element in text_matches_elements:
 
-                if (not element.is_displayed) or (element.get_attribute('hidden')=='true') or (element.tag_name=='input' and element.get_attribute('type')=='hidden'):
+                try:
+                    if (not element.is_displayed) or (element.get_attribute('hidden')=='true') or (element.tag_name=='input' and element.get_attribute('type')=='hidden'):
+                        continue ; 
+
+                    # accessing id or class attribute of stale element("like that input tag which in is google.com page ") raises this exception
+                    ele_id , temp_class , temp_attr_id  = element.id , element.get_attribute('class') , element.get_attribute('id')
+                
+                except exceptions.StaleElementReferenceException as E:
+                    print(E) ; 
                     continue ; 
+
 
                 if(element.id in self.element_to_score_id_set):
                     ''' No need to call the max method if the method call is ordered from most specific to least specific which naturally has the max score if the element is already present '''
                     self.element_to_score[element] = max(self.element_to_score[element] , score ) ; 
+
                 else:
                     self.element_to_score[element] = score ; 
                     self.element_to_score_id_set.add(element.id)
@@ -91,7 +103,6 @@ class Browser:
                 add_to_init_text_matches_score_from_xpath("//body//{}".format(tag) , score=40) ; 
 
 
-
         if tag:
             add_to_init_text_matches_score_from_xpath(("//body//{}[@value='{}']".format(tag , text)) , score=50 )
             add_to_init_text_matches_score_from_xpath(("//body//{}[text()='{}']".format(tag , text)) , score=50 )
@@ -128,15 +139,6 @@ class Browser:
                 handle_input_tag() 
 
 
-        # if(match_level=='loose'):
-        #     add_to_init_text_matches_score_from_xpath("//body//*[@value='{}']".format(text) , score=30 ) ;
-        #     add_to_init_text_matches_score_from_xpath("//body//*[text()='{}']".format(text) , score=30 ) ;
-
-
-        #     add_to_init_text_matches_score_from_xpath(("//body//*[contains(text() , '{}')]".format(text)) , score=27 )
-
-        #     add_to_init_text_matches_score_from_xpath(("//body//*[contains(translate(text() , '{}' , '{}' ) , '{}' )]".format(text.upper() , text.lower() , text.lower())) ,score=25) ; 
-                            
 
 
         for element in self.element_to_score.keys():
@@ -175,33 +177,55 @@ class Browser:
         self.driver.back() ;
 
 
-
     def go_to(self , url):
         self.driver.get(url) 
 
 
-
     def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose'):
         maxElements = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , match_level)
+
         for element in maxElements:
             try:
                 element.click() ; 
 
-        
+            except Exception as E:
+                print("Exception raised for the element : " ,'''
+                tagname : {} , id : {}  , classname : {} , id_attribute : {}
+                '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
+                print("Exception : \n\n" , E) ; 
+    
+
+    def press(self , key):
+        ActionChains(self.driver).send_keys(key).perform()
+    
+    def press_and_hold(self , key):
+        ActionChains(self.driver).key_down(key).perform() ;
+
+    def release_key(self , key):
+        ActionChains(self.driver).key_up(key).perform() ; 
+
+
+
 
 
     def type(self , text , into ='' , clear = True , tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
-        maxElement = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , match_level)
+        maxElements = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , match_level)
 
-        
+        for element in maxElements:
+
+            try:
+                if(clear):
+                    element.clear() 
+                element.send_keys(text)
+                break ; 
+ 
+            except exceptions.WebDriverException as E:
+                print("Exception raised for the element : " ,'''
+                tagname : {} , id : {}  , classname : {} , id_attribute : {}
+                '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
+                print("Exception : \n\n" , E) ; 
 
 
-
-
-        if(clear):
-            element.clear() 
-        element.send_keys(text)
-        
 
     def select_tab(self , number):
         self.driver.find_element_by_css_selector("body").send_keys(Keys.CONTROL + 2);
@@ -218,5 +242,6 @@ if(__name__=='__main__'):
     # aton.go_to('http://daedalcrafters.pythonanywhere.com') 
     aton.go_to('https://google.com')
     aton.type("hello" )
+    ActionChains(aton.driver).send_keys(Keys.ENTER)
     # aton.type("itsme" , 'Password')
     aton.click('Google Search' , tag='button')
