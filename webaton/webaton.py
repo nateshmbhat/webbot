@@ -38,7 +38,7 @@ class Browser:
                         continue ; 
 
                     # accessing id or class attribute of stale element("like that input tag which in is google.com page ") raises this exception
-                    ele_id , temp_class , temp_attr_id  = element.id , element.get_attribute('class') , element.get_attribute('id')
+                    element_tag_name = element.tag_name 
                 
                 except exceptions.StaleElementReferenceException as E:
                     print(E) ; 
@@ -86,17 +86,15 @@ class Browser:
 
         def handle_input_tag():
             if(text):
-                element_fetch_helper(("//body//input[@value='{}']".format(text)) , score=45 )
-                element_fetch_helper(("//body//input[@placeholder='{}']".format(text)) , score=45 )
+                for test_attr in ['@value' , '@placeholder' , '@aria-label']:
+                    element_fetch_helper(("//body//input[{}='{}']".format(test_attr, text)) , score=45 )
+                    element_fetch_helper(("//body//input[contains( {} , '{}')]".format(test_attr , text)) , score=37 )
+                    element_fetch_helper(("//body//input[contains(translate( {} , '{}' , '{}' ) , '{}')]".format(test_attr ,  text.upper() , text.lower() , text.lower())) ,score=33) ; 
+
 
                 find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[text()='{}']".format(text)) , score =45)
 
-                element_fetch_helper(("//body//input[contains( @value , '{}')]".format(text)) , score=37 )
-                element_fetch_helper(("//body//input[contains( @placeholder , '{}')]".format(text)) , score=37 )
                 find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains( text() , '{}')]".format(text)) , score=37 )
-
-                element_fetch_helper(("//body//input[contains(translate( @value , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
-                element_fetch_helper(("//body//input[contains(translate( @placeholder , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
 
                 find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains(translate( text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
 
@@ -108,7 +106,7 @@ class Browser:
             element_fetch_helper(("//body//{}[text()='{}']".format( tagvar , text)) , score=45)
             element_fetch_helper(("//body//{}//*[text()='{}']".format(tagvar , text)) , score=45)
 
-            add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(tagvar , text)) , score=43 ) ;
+            add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(text)) , score=43 ) ;
 
             element_fetch_helper(("//body//{}[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
             element_fetch_helper(("//body//{}//*[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
@@ -117,6 +115,15 @@ class Browser:
             element_fetch_helper(("//body//{}//*[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(tagvar , text.upper() , text.lower() , text.lower())) ,score=33);
 
 
+        def handle_loose_check():
+            '''This method must only be used iff no element based on the given text input is found ! '''
+            if(match_level=='loose' and text):
+                element_fetch_helper("//body//*[@value='{}']".format(text) , score=30 ) ;
+                element_fetch_helper("//body//*[text()='{}']".format(text) , score=30 ) ;
+
+                element_fetch_helper(("//body//*[contains(text() , '{}')]".format(text)) , score=27 )
+
+                element_fetch_helper(("//body//*[contains(translate(text() , '{}' , '{}' ) , '{}' )]".format(text.upper() , text.lower() , text.lower())) ,score=25) ; 
 
         if tag:
             element_fetch_helper(("//body//{}[@value='{}']".format(tag , text)) , score=50 )
@@ -128,8 +135,9 @@ class Browser:
         if(text.lower() in 'your password'):
             element_fetch_helper("//body//input[contains(@name , '{}') ]".format('password') , score=47)
 
+
         if(text.lower() in ['username' , 'email' , 'login'] and tag=='input'):
-            element_fetch_helper("//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 'login' ) ]" , 53 )
+            element_fetch_helper('''//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 'login' ) or contains(translate(@type , 'EMAIL' , 'email' )  ]''' , 53 )
 
 
         if(tag=='input'):
@@ -147,6 +155,14 @@ class Browser:
             add_to_init_text_matches_score( self.driver.find_elements_by_id(id) , 100)
         if(classname):
             add_to_init_text_matches_score( self.driver.find_elements_by_class_name(classname) , 50 )
+
+
+        if(not len(self.element_to_score.keys())):
+            handle_loose_check()
+
+        if(not len(self.element_to_score.keys())):
+            print("No element found ! ") ; 
+            return []; 
 
 
         for element in self.element_to_score.keys():
@@ -169,6 +185,7 @@ class Browser:
                 score+=30
 
             self.element_to_score[element] = score; 
+
         
 
         max_score = max(self.element_to_score.values())
@@ -184,6 +201,8 @@ class Browser:
     def go_back(self):
         self.driver.back() ;
 
+    def go_forward(self):
+        self.driver.forward() ; 
 
     def go_to(self , url):
         self.driver.get(url) 
@@ -195,12 +214,23 @@ class Browser:
         for element in maxElements:
             try:
                 element.click() ; 
+                break ; 
 
             except Exception as E:
                 print("Exception raised for the element : " ,'''
                 tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
                 print("Exception : \n\n" , E) ; 
+
+
+    def scrolly(self , amount : int ):
+        assert isinstance(amount , int) 
+        self.driver.execute_script("scroll(0, {});".format(amount) ) ;
+
+
+    def scrollx(self , amount : int ):
+        assert isinstance(amount , int) 
+        self.driver.execute_script("scroll( {}, 0 );".format(amount) ) ;
     
 
     def press(self , key):
@@ -229,7 +259,6 @@ class Browser:
                 tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
                 print("Exception : \n\n" , E) ; 
-
 
 
     def select_tab(self , number):
