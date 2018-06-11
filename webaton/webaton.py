@@ -26,6 +26,7 @@ class Browser:
    
         self.element_to_score = OrderedDict()
         self.element_to_score_id_set = set();
+        if(tag=='link'):tag = 'a' ; 
 
         def add_to_init_text_matches_score(text_matches_elements : list , score :int )->None:
             '''Extends a dictionary and maps it with the text_matched_element with the score'''
@@ -53,7 +54,7 @@ class Browser:
                     self.element_to_score_id_set.add(element.id)
         
 
-        def add_to_init_text_matches_score_from_xpath(xpath , score ):
+        def element_fetch_helper(xpath , score ):
             add_to_init_text_matches_score( self.driver.find_elements_by_xpath(xpath) , score ) ;
 
 
@@ -67,13 +68,13 @@ class Browser:
 
                 possible_input_id = element.get_attribute('for') ; 
                 try : 
-                    add_to_init_text_matches_score_from_xpath(("//body//input[@id='{}']".format(possible_input_id)) , score )
+                    element_fetch_helper(("//body//input[@id='{}']".format(possible_input_id)) , score )
 
                     add_to_init_text_matches_score( element.find_elements_by_xpath("../input[contains(translate(@id , '{}' ,'{}' ) , '{}')]".format(text.upper() , text.lower() ,  text.lower())) , score - 5)                    
 
                     add_to_init_text_matches_score( element.find_elements_by_xpath("/./preceding::input") ,  score - 7)                    
 
-                    add_to_init_text_matches_score_from_xpath(("//body//input[@name='{}']".format(possible_input_id)) , score-6 )
+                    element_fetch_helper(("//body//input[@name='{}']".format(possible_input_id)) , score-6 )
 
                     add_to_init_text_matches_score( element.find_elements_by_xpath("../input") , score - 10)                    
                     
@@ -85,36 +86,50 @@ class Browser:
 
         def handle_input_tag():
             if(text):
-                add_to_init_text_matches_score_from_xpath(("//body//input[@value='{}']".format(text)) , score=45 )
-                add_to_init_text_matches_score_from_xpath(("//body//input[@placeholder='{}']".format(text)) , score=45 )
+                element_fetch_helper(("//body//input[@value='{}']".format(text)) , score=45 )
+                element_fetch_helper(("//body//input[@placeholder='{}']".format(text)) , score=45 )
 
                 find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[text()='{}']".format(text)) , score =45)
 
-                add_to_init_text_matches_score_from_xpath(("//body//input[contains( @value , '{}')]".format(text)) , score=37 )
-                add_to_init_text_matches_score_from_xpath(("//body//input[contains( @placeholder , '{}')]".format(text)) , score=37 )
+                element_fetch_helper(("//body//input[contains( @value , '{}')]".format(text)) , score=37 )
+                element_fetch_helper(("//body//input[contains( @placeholder , '{}')]".format(text)) , score=37 )
                 find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains( text() , '{}')]".format(text)) , score=37 )
 
-                add_to_init_text_matches_score_from_xpath(("//body//input[contains(translate( @value , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
-                add_to_init_text_matches_score_from_xpath(("//body//input[contains(translate( @placeholder , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
+                element_fetch_helper(("//body//input[contains(translate( @value , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
+                element_fetch_helper(("//body//input[contains(translate( @placeholder , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
 
                 find_input_element_for_label(self.driver.find_elements_by_xpath("//body//label[contains(translate( text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
 
             else:
-                add_to_init_text_matches_score_from_xpath("//body//{}".format(tag) , score=40) ; 
+                element_fetch_helper("//body//{}".format(tag) , score=40) ; 
+
+        
+        def handle_button_or_link_tag(tagvar):
+            element_fetch_helper(("//body//{}[text()='{}']".format( tagvar , text)) , score=45)
+            element_fetch_helper(("//body//{}//*[text()='{}']".format(tagvar , text)) , score=45)
+
+            add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(tagvar , text)) , score=43 ) ;
+
+            element_fetch_helper(("//body//{}[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
+            element_fetch_helper(("//body//{}//*[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
+
+            element_fetch_helper(("//body//{}[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(tagvar , text.upper() , text.lower() , text.lower())) ,score=33) ; 
+            element_fetch_helper(("//body//{}//*[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(tagvar , text.upper() , text.lower() , text.lower())) ,score=33);
+
 
 
         if tag:
-            add_to_init_text_matches_score_from_xpath(("//body//{}[@value='{}']".format(tag , text)) , score=50 )
-            add_to_init_text_matches_score_from_xpath(("//body//{}[text()='{}']".format(tag , text)) , score=50 )
-            add_to_init_text_matches_score_from_xpath(("//body//{}[contains(text() , '{}') ]".format(tag , text)) , score=49 )
-            add_to_init_text_matches_score_from_xpath(("//body//{0}[contains(translate(text()  ,'{1}', '{2}') , '{2}') ]".format(tag , text.upper() , text.lower())) , score=48 )
+            element_fetch_helper(("//body//{}[@value='{}']".format(tag , text)) , score=50 )
+            element_fetch_helper(("//body//{}[text()='{}']".format(tag , text)) , score=50 )
+            element_fetch_helper(("//body//{}[contains(text() , '{}') ]".format(tag , text)) , score=49 )
+            element_fetch_helper(("//body//{0}[contains(translate(text()  ,'{1}', '{2}') , '{2}') ]".format(tag , text.upper() , text.lower())) , score=48 )
 
 
         if(text.lower() in 'your password'):
-            add_to_init_text_matches_score_from_xpath("//body//input[contains(@name , '{}') ]".format('password') , score=47)
+            element_fetch_helper("//body//input[contains(@name , '{}') ]".format('password') , score=47)
 
         if(text.lower() in ['username' , 'email' , 'login'] and tag=='input'):
-            add_to_init_text_matches_score_from_xpath("//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 'login' ) ]" , 53 )
+            element_fetch_helper("//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 'login' ) ]" , 53 )
 
 
         if(tag=='input'):
@@ -122,23 +137,16 @@ class Browser:
             
 
         if(tag=='button'):
-
-            add_to_init_text_matches_score_from_xpath(("//body//button[text()='{}']".format(text)) , score=45)
-            add_to_init_text_matches_score_from_xpath(("//body//button//*[text()='{}']".format(text)) , score=45)
-
-            add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(text)) , score=43 ) ;
-
-            add_to_init_text_matches_score_from_xpath(("//body//button[contains(text() , '{}')]".format(text)) , score=37 )
-            add_to_init_text_matches_score_from_xpath(("//body//button//*[contains(text() , '{}')]".format(text)) , score=37 )
-
-            add_to_init_text_matches_score_from_xpath(("//body//button[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33) ; 
-            add_to_init_text_matches_score_from_xpath(("//body//button//*[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(text.upper() , text.lower() , text.lower())) ,score=33);
-
-
             if(len(self.element_to_score.keys())==0):
                 handle_input_tag() 
+            if(len(self.element_to_score.keys())==0):
+                handle_button_or_link_tag('a') 
 
 
+        if(id):
+            add_to_init_text_matches_score( self.driver.find_elements_by_id(id) , 100)
+        if(classname):
+            add_to_init_text_matches_score( self.driver.find_elements_by_class_name(classname) , 50 )
 
 
         for element in self.element_to_score.keys():
@@ -203,9 +211,6 @@ class Browser:
 
     def release_key(self , key):
         ActionChains(self.driver).key_up(key).perform() ; 
-
-
-
 
 
     def type(self , text , into ='' , clear = True , tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
