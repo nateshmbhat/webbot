@@ -32,7 +32,6 @@ class Browser:
             '''Extends a dictionary and maps it with the text_matched_element with the score'''
 
             for element in text_matches_elements:
-
                 try:
                     if (not element.is_displayed) or (element.get_attribute('hidden')=='true') or (element.tag_name=='input' and element.get_attribute('type')=='hidden'):
                         continue ; 
@@ -137,7 +136,7 @@ class Browser:
 
 
         if(text.lower() in ['username' , 'email' , 'login'] and tag=='input'):
-            element_fetch_helper('''//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 'login' ) or contains(translate(@type , 'EMAIL' , 'email' )  ]''' , 53 )
+            element_fetch_helper('''//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 'login' ) or contains(translate(@type , 'EMAIL' , 'email') , 'email')] ''' , 53 )
 
 
         if(tag=='input'):
@@ -145,6 +144,8 @@ class Browser:
             
 
         if(tag=='button'):
+            handle_button_or_link_tag(tag)
+
             if(len(self.element_to_score.keys())==0):
                 handle_input_tag() 
             if(len(self.element_to_score.keys())==0):
@@ -274,8 +275,8 @@ class Chrome:
 if(__name__=='__main__'):
     aton = Browser() ; 
     # aton.go_to('http://daedalcrafters.pythonanywhere.com') 
-    aton.go_to('https://google.com')
-    aton.type("hello" )
-    ActionChains(aton.driver).send_keys(Keys.ENTER)
-    # aton.type("itsme" , 'Password')
-    aton.click('Google Search' , tag='button')
+    aton.go_to('https://daedalcrafters.pythonanywhere.com')
+    aton.type("akshay" , 'Username')
+    aton.type("amazonmws" , 'Password')
+    aton.click('LOGIN')
+    aton.click('COPY') ; 
