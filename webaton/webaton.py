@@ -124,6 +124,7 @@ class Browser:
 
                 element_fetch_helper(("//body//*[contains(translate(text() , '{}' , '{}' ) , '{}' )]".format(text.upper() , text.lower() , text.lower())) ,score=25) ; 
 
+
         if tag:
             element_fetch_helper(("//body//{}[@value='{}']".format(tag , text)) , score=50 )
             element_fetch_helper(("//body//{}[text()='{}']".format(tag , text)) , score=50 )
@@ -137,6 +138,7 @@ class Browser:
 
         if(text.lower() in ['username' , 'email' , 'login'] and tag=='input'):
             element_fetch_helper('''//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 'login' ) or contains(translate(@type , 'EMAIL' , 'email') , 'email')] ''' , 53 )
+
 
 
         if(tag=='input'):
@@ -158,8 +160,10 @@ class Browser:
             add_to_init_text_matches_score( self.driver.find_elements_by_class_name(classname) , 50 )
 
 
+
         if(not len(self.element_to_score.keys())):
             handle_loose_check()
+
 
         if(not len(self.element_to_score.keys())):
             print("No element found ! ") ; 
@@ -186,7 +190,6 @@ class Browser:
                 score+=30
 
             self.element_to_score[element] = score; 
-
         
 
         max_score = max(self.element_to_score.values())
@@ -226,22 +229,31 @@ class Browser:
 
     def scrolly(self , amount : int ):
         assert isinstance(amount , int) 
-        self.driver.execute_script("scroll(0, {});".format(amount) ) ;
+        self.driver.execute_script("window.scrollBy(0, {});".format(amount) ) ;
 
 
     def scrollx(self , amount : int ):
         assert isinstance(amount , int) 
-        self.driver.execute_script("scroll( {}, 0 );".format(amount) ) ;
+        self.driver.execute_script("window.scrollBy( {}, 0 );".format(amount) ) ;
     
 
     def press(self , key):
-        ActionChains(self.driver).send_keys(key).perform()
-    
-    def press_and_hold(self , key):
-        ActionChains(self.driver).key_down(key).perform() ;
+        specialkeys = [key for key in dir(Keys) if '_' not in key]
+        action = ActionChains(self.driver).key_down(key[0]) ; 
+        for c in key[1:]:
+            action = (action.key_down(c) if c in specialkeys else action.send_keys(c)) ; 
 
-    def release_key(self , key):
-        ActionChains(self.driver).key_up(key).perform() ; 
+        action.key_up(Keys.CONTROL).key_up(Keys.ALT).key_up(Keys.SHIFT).key_up(Keys.COMMAND).key_up(Keys.LEFT_SHIFT).key_up(Keys.LEFT_CONTROL).key_up(Keys.LEFT_ALT).perform() ; 
+
+
+
+   
+    # def press_and_hold(self , key):
+    #     '''Used to press and hold only Special keys (modifier keys) '''
+    #     ActionChains(self.driver).key_down(key).perform() ;
+
+    # def release_key(self , key):
+    #     ActionChains(self.driver).key_up(key).perform() ; 
 
 
     def type(self , text , into ='' , clear = True , tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
