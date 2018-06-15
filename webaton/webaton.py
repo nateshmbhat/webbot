@@ -7,7 +7,6 @@ from time import sleep
 import sys , argparse , os  
 
 
-
 class Browser:
 
     def __init__(self , showWindow = False ):
@@ -18,9 +17,19 @@ class Browser:
         driverfilename = "chrome_linux" if  os.name=='posix' else "chrome_windows.exe" if os.name=='nt' else "chrome_mac" ; 
         driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
         self.driver = webdriver.Chrome(executable_path=driverpath , chrome_options=options)
-        self.key = Keys ; 
-    
+        self.Key = Keys ;
 
+        [setattr(self , function  , getattr(self.driver , function) ) for function in ['add_cookie' ,'delete_all_cookies','delete_cookie' , 'execute_script' , 'execute_async_script' ,'fullscreen_window','get_cookie' ,'get_cookies','get_log','get_network_conditions','get_screenshot_as_base64' ,'get_screenshot_as_file','get_screenshot_as_png','get_window_position','get_window_rect','get_window_size','maximize_window','minimize_window','implicitly_wait','quit','close','refresh','save_screenshot','set_network_conditions','set_page_load_timeout','set_script_timeout','set_window_position','set_window_rect','start_client','start_session','stop_client','switch_to_alert']]
+
+
+    def get_current_url(self): return self.driver.current_url ;
+    def get_current_window_handle(self):return self.driver.current_window_handle
+    def get_application_cache(self):return self.driver.application_cache
+    def get_desired_capabilities(self):return self.driver.desired_capabilities
+    def get_log_types(self):return self.driver.log_types
+    def get_title(self):return self.driver.title
+    def get_page_source(self):return self.driver.page_source
+    
 
     def __find_element__(self , text , tag , classname , id , number ,css_selector , xpath , match_level): 
    
@@ -53,9 +62,9 @@ class Browser:
                     self.element_to_score_id_set.add(element.id)
         
 
+
         def element_fetch_helper(xpath , score ):
             add_to_init_text_matches_score( self.driver.find_elements_by_xpath(xpath) , score ) ;
-
 
 
         def find_input_element_for_label(elementlist , score):
@@ -102,16 +111,23 @@ class Browser:
 
         
         def handle_button_or_link_tag(tagvar):
-            element_fetch_helper(("//body//{}[text()='{}']".format( tagvar , text)) , score=45)
-            element_fetch_helper(("//body//{}//*[text()='{}']".format(tagvar , text)) , score=45)
+            if(text):
+                element_fetch_helper(("//body//{}[text()='{}']".format( tagvar , text)) , score=45)
+                element_fetch_helper(("//body//{}//*[text()='{}']".format(tagvar , text)) , score=45)
 
-            add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(text)) , score=43 ) ;
+                add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(text)) , score=43 ) ;
 
-            element_fetch_helper(("//body//{}[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
-            element_fetch_helper(("//body//{}//*[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
+                element_fetch_helper(("//body//{}[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
+                element_fetch_helper(("//body//{}//*[contains(text() , '{}')]".format(tagvar , text)) , score=37 )
 
-            element_fetch_helper(("//body//{}[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(tagvar , text.upper() , text.lower() , text.lower())) ,score=33) ; 
-            element_fetch_helper(("//body//{}//*[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(tagvar , text.upper() , text.lower() , text.lower())) ,score=33);
+                element_fetch_helper(("//body//{}[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(tagvar , text.upper() , text.lower() , text.lower())) ,score=33) ; 
+                element_fetch_helper(("//body//{}//*[contains(translate(text() , '{}' , '{}' ) , '{}')]".format(tagvar , text.upper() , text.lower() , text.lower())) ,score=33);
+
+
+            else:
+                element_fetch_helper(("//body//{}".format(tagvar)) , score=40)
+
+
 
 
         def handle_loose_check():
@@ -125,7 +141,11 @@ class Browser:
                 element_fetch_helper(("//body//*[contains(translate(text() , '{}' , '{}' ) , '{}' )]".format(text.upper() , text.lower() , text.lower())) ,score=25) ; 
 
 
-        if tag:
+        if not text and tag:
+            element_fetch_helper(("//body//{}".format(tag )) , score=50 )
+
+
+        elif tag:
             element_fetch_helper(("//body//{}[@value='{}']".format(tag , text)) , score=50 )
             element_fetch_helper(("//body//{}[text()='{}']".format(tag , text)) , score=50 )
             element_fetch_helper(("//body//{}[contains(text() , '{}') ]".format(tag , text)) , score=49 )
@@ -191,7 +211,6 @@ class Browser:
 
             self.element_to_score[element] = score; 
         
-
         max_score = max(self.element_to_score.values())
         max_scored_elements = [element for element in self.element_to_score.keys() if (self.element_to_score[element]==max_score)]
 
@@ -201,6 +220,22 @@ class Browser:
         print("\n\nMax SCORES " , max_scored_elements) ; 
         return (self._max_score_elements_ ) ; 
 
+
+
+    def __set_error__(self , element ):
+
+
+
+
+    def get_total_tabs(self):
+        return len(self.driver.window_handles) ; 
+
+
+    def switch_to_tab(self , number):
+        assert number<=len(self.driver.window_handles) and number>0 , "Tab number must be less than or equal to the total number of tabs" ; 
+
+        self.driver.switch_to_window(self.driver.window_handles[number-1]) ;
+        
 
     def go_back(self):
         self.driver.back() ;
@@ -213,6 +248,12 @@ class Browser:
 
 
     def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose'):
+
+        if(not (text or id or classname or css_selector or xpath )):
+            ActionChains(self.driver).click().perform()
+            return ;
+
+
         maxElements = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , match_level)
 
         for element in maxElements:
@@ -245,22 +286,16 @@ class Browser:
 
         action.key_up(Keys.CONTROL).key_up(Keys.ALT).key_up(Keys.SHIFT).key_up(Keys.COMMAND).key_up(Keys.LEFT_SHIFT).key_up(Keys.LEFT_CONTROL).key_up(Keys.LEFT_ALT).perform() ; 
 
-
-
    
-    # def press_and_hold(self , key):
-    #     '''Used to press and hold only Special keys (modifier keys) '''
-    #     ActionChains(self.driver).key_down(key).perform() ;
-
-    # def release_key(self , key):
-    #     ActionChains(self.driver).key_up(key).perform() ; 
-
 
     def type(self , text , into ='' , clear = True , tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
+        if(not (into or id or classname or css_selector or xpath)):
+            ActionChains(self.driver).send_keys(text).perform() ;
+            return ;  
+
         maxElements = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , match_level)
 
         for element in maxElements:
-
             try:
                 if(clear):
                     element.clear() 
