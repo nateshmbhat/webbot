@@ -18,8 +18,11 @@ class Browser:
         driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
         self.driver = webdriver.Chrome(executable_path=driverpath , chrome_options=options)
         self.Key = Keys ;
+        self.errors = list() ; 
 
-        [setattr(self , function  , getattr(self.driver , function) ) for function in ['add_cookie' ,'delete_all_cookies','delete_cookie' , 'execute_script' , 'execute_async_script' ,'fullscreen_window','get_cookie' ,'get_cookies','get_log','get_network_conditions','get_screenshot_as_base64' ,'get_screenshot_as_file','get_screenshot_as_png','get_window_position','get_window_rect','get_window_size','maximize_window','minimize_window','implicitly_wait','quit','close','refresh','save_screenshot','set_network_conditions','set_page_load_timeout','set_script_timeout','set_window_position','set_window_rect','start_client','start_session','stop_client','switch_to_alert']]
+        [setattr(self , function  , getattr(self.driver , function) ) for function in ['add_cookie' ,'delete_all_cookies','delete_cookie' , 'execute_script' , 'execute_async_script' ,'fullscreen_window','get_cookie' ,'get_cookies','get_log','get_network_conditions','get_screenshot_as_base64' ,'get_screenshot_as_file','get_screenshot_as_png','get_window_position','get_window_rect','get_window_size','maximize_window','minimize_window','implicitly_wait','quit','refresh','save_screenshot','set_network_conditions','set_page_load_timeout','set_script_timeout','set_window_position','set_window_rect','start_client','start_session','stop_client','switch_to_alert']]
+
+        self.close_current_tab = self.driver.close ; 
 
 
     def get_current_url(self): return self.driver.current_url ;
@@ -29,7 +32,6 @@ class Browser:
     def get_log_types(self):return self.driver.log_types
     def get_title(self):return self.driver.title
     def get_page_source(self):return self.driver.page_source
-    
 
     def __find_element__(self , text , tag , classname , id , number ,css_selector , xpath , match_level): 
    
@@ -222,9 +224,12 @@ class Browser:
 
 
 
-    def __set_error__(self , element ):
+    def __set_error__(self , Exceptionerror , element = None  , message = ''):
+        self.errors.append({Exceptionerror : Exceptionerror , element : element , message : message}) ; 
+    
 
-
+    def __reset_error__(self , error):
+        self.errors = list() ; 
 
 
     def get_total_tabs(self):
@@ -262,6 +267,9 @@ class Browser:
                 break ; 
 
             except Exception as E:
+                self.__set_error__(E , element  , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
+                '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) ) ; 
+
                 print("Exception raised for the element : " ,'''
                 tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
