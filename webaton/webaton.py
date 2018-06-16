@@ -1,4 +1,5 @@
 from selenium import webdriver ;
+import re ; 
 from collections import OrderedDict
 from selenium.common import exceptions
 from selenium.webdriver.common.action_chains import ActionChains
@@ -32,6 +33,7 @@ class Browser:
     def get_log_types(self):return self.driver.log_types
     def get_title(self):return self.driver.title
     def get_page_source(self):return self.driver.page_source
+    
 
     def __find_element__(self , text , tag , classname , id , number ,css_selector , xpath , match_level): 
    
@@ -44,13 +46,14 @@ class Browser:
 
             for element in text_matches_elements:
                 try:
-                    if (not element.is_displayed) or (element.get_attribute('hidden')=='true') or (element.tag_name=='input' and element.get_attribute('type')=='hidden'):
-                        continue ; 
+                    if (not element.is_displayed()) or (not element.is_enabled() and tag in ['input','button','a','textarea']) or (element.get_attribute('hidden')=='true') or (element.tag_name=='input' and element.get_attribute('type')=='hidden'):
+                        continue ;
 
                     # accessing id or class attribute of stale element("like that input tag which in is google.com page ") raises this exception
                     element_tag_name = element.tag_name 
                 
                 except exceptions.StaleElementReferenceException as E:
+                    self.__set_error__(E , element) ;
                     print(E) ; 
                     continue ; 
 
@@ -90,13 +93,14 @@ class Browser:
                     
 
                 except exceptions.NoSuchElementException as E:
+                    self.__set_error__(E , element) ; 
                     print("Exception : {}".format(E)) ;
                 
 
 
         def handle_input_tag():
             if(text):
-                for test_attr in ['@value' , '@placeholder' , '@aria-label']:
+                for test_attr in ['@value' , '@placeholder' , 'name' , '@aria-label']:
                     element_fetch_helper(("//body//input[{}='{}']".format(test_attr, text)) , score=45 )
                     element_fetch_helper(("//body//input[contains( {} , '{}')]".format(test_attr , text)) , score=37 )
                     element_fetch_helper(("//body//input[contains(translate( {} , '{}' , '{}' ) , '{}')]".format(test_attr ,  text.upper() , text.lower() , text.lower())) ,score=33) ; 
@@ -134,7 +138,7 @@ class Browser:
 
         def handle_loose_check():
             '''This method must only be used iff no element based on the given text input is found ! '''
-            if(match_level=='loose' and text):
+            if(text):
                 element_fetch_helper("//body//*[@value='{}']".format(text) , score=30 ) ;
                 element_fetch_helper("//body//*[text()='{}']".format(text) , score=30 ) ;
 
@@ -183,7 +187,7 @@ class Browser:
 
 
 
-        if(not len(self.element_to_score.keys())):
+        if(not len(self.element_to_score.keys()) and match_level=='loose'):
             handle_loose_check()
 
 
@@ -225,34 +229,56 @@ class Browser:
 
 
     def __set_error__(self , Exceptionerror , element = None  , message = ''):
+        '''Set the error in case of any exception occured whenever performing any action like click or type '''
         self.errors.append({Exceptionerror : Exceptionerror , element : element , message : message}) ; 
     
 
-    def __reset_error__(self , error):
+    def __reset_error__(self ):
         self.errors = list() ; 
 
 
     def get_total_tabs(self):
+        '''Gets the total number of tabs or windows that is currently open '''
         return len(self.driver.window_handles) ; 
 
 
     def switch_to_tab(self , number):
+        '''Switch to the tab corresponding to the number argument. The tabs are numbered in the order that they are opened by the web driver.
+So changing the order of the tabs in the browser won't change the tab numbers.
+        '''
         assert number<=len(self.driver.window_handles) and number>0 , "Tab number must be less than or equal to the total number of tabs" ; 
 
         self.driver.switch_to_window(self.driver.window_handles[number-1]) ;
         
 
+
     def go_back(self):
+        '''Go back to the previous URL.
+It's same as clicking the back button in browser . 
+        '''
         self.driver.back() ;
 
+
     def go_forward(self):
+        '''It's same as clicking the formward button in the browser'''
         self.driver.forward() ; 
 
+
     def go_to(self , url):
+        '''Open the webpage corresponding to the url given in the parameter.
+
+If the url doesn't contain the protocol of the url  , then by default https is considered 
+        
+        '''
+        if(not re.match("\w+://.*" , url )):
+            url = "https://" + url ; 
+
         self.driver.get(url) 
 
 
-    def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose'):
+    def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'tight' , multiple = False):
+
+        self.__reset_error__() ;
 
         if(not (text or id or classname or css_selector or xpath )):
             ActionChains(self.driver).click().perform()
@@ -261,10 +287,17 @@ class Browser:
 
         maxElements = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , match_level)
 
+        temp_element_index_ = 1 ; 
+
         for element in maxElements:
             try:
-                element.click() ; 
-                break ; 
+                if(element.is_displayed() and element.is_enabled()):
+                    if((number==temp_element_index_) or multiple  ) :
+                        element.click() ; 
+                    temp_element_index_+=1 ; 
+
+                if(not multiple):
+                    break ; 
 
             except Exception as E:
                 self.__set_error__(E , element  , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
@@ -274,19 +307,53 @@ class Browser:
                 tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
                 print("Exception : \n\n" , E) ; 
-
+        
 
     def scrolly(self , amount : int ):
+        '''Scroll vertically by the specified amount 
+
+        :Args: 
+            - amount : positive integer for scrolling down or negative integer for scrolling up  
+
+        :Usage:
+            scrolly(100) 
+            scrolly(-200) 
+        '''
         assert isinstance(amount , int) 
         self.driver.execute_script("window.scrollBy(0, {});".format(amount) ) ;
 
 
     def scrollx(self , amount : int ):
+        '''Scroll horizontally by the specified amount 
+
+        :Args:  
+            - amount : positive integer for scrolling right or negative integer for scrolling left
+            
+        :Usage:
+            scrollx(100) 
+            scrollx(-200)
+        '''
+ 
         assert isinstance(amount , int) 
         self.driver.execute_script("window.scrollBy( {}, 0 );".format(amount) ) ;
     
 
     def press(self , key):
+
+        '''Press any special key or a key combination involving Ctrl , Alt , Shift 
+
+        :Args: 
+            -key : A key present in Browser().Key added with any other key to get the key combination.
+
+        :Usage:
+            press(web.Key.SHIFT + 'hello')  # Sends keys HELLO in capital letters 
+
+            press(web.Key.ENTER) 
+        
+        '''
+
+
+        self.__reset_error__() ; 
         specialkeys = [key for key in dir(Keys) if '_' not in key]
         action = ActionChains(self.driver).key_down(key[0]) ; 
         for c in key[1:]:
@@ -294,31 +361,56 @@ class Browser:
 
         action.key_up(Keys.CONTROL).key_up(Keys.ALT).key_up(Keys.SHIFT).key_up(Keys.COMMAND).key_up(Keys.LEFT_SHIFT).key_up(Keys.LEFT_CONTROL).key_up(Keys.LEFT_ALT).perform() ; 
 
+
    
 
-    def type(self , text , into ='' , clear = True , tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'loose' ):
+    def type(self , text , into ='' , clear = True , multiple=False ,  tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'tight' ):
+        '''
+        Types the text into an input field 
+
+        Args:
+            - text  : The text to type in the input field.
+            - into  : This can be any placeholder or name or value that is seen inside the input text box as seen in a browser. If not specified , other params are considered or the first input field is selected.
+            - clear : Clears the input field before typing the text
+            - tag   : The html tag to consider for the input field (eg : textarea) , defaults to 'input' 
+            - id    : id of the element to which the text must be sent
+            - classname : Any class of the input element to consider while selecting the input element to send the keys to. 
+            - number : 
+
+        '''
+
+        self.__reset_error__()  ; 
         if(not (into or id or classname or css_selector or xpath)):
             ActionChains(self.driver).send_keys(text).perform() ;
             return ;  
 
         maxElements = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , match_level)
 
+
+        temp_element_index_ = 1 ; 
+
+
         for element in maxElements:
+
             try:
-                if(clear):
-                    element.clear() 
-                element.send_keys(text)
-                break ; 
- 
+                if((number==temp_element_index_) or multiple  ) :
+                    if(clear):
+                        element.clear() ; 
+                    element.send_keys(text) ; 
+                temp_element_index_+=1 ; 
+
+                if(not multiple):
+                    break ; 
+
+
             except exceptions.WebDriverException as E:
+                self.__set_error__(E , element , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
+                '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')))
+
                 print("Exception raised for the element : " ,'''
                 tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
                 print("Exception : \n\n" , E) ; 
-
-
-    def select_tab(self , number):
-        self.driver.find_element_by_css_selector("body").send_keys(Keys.CONTROL + 2);
 
 
 
@@ -329,9 +421,6 @@ class Chrome:
 
 if(__name__=='__main__'):
     aton = Browser() ; 
-    # aton.go_to('http://daedalcrafters.pythonanywhere.com') 
-    aton.go_to('https://daedalcrafters.pythonanywhere.com')
-    aton.type("akshay" , 'Username')
-    aton.type("amazonmws" , 'Password')
-    aton.click('LOGIN')
-    aton.click('COPY') ; 
+    aton.go_to('https://google.com')
+    aton.type("Hello its me " , into="Search") ;
+    aton.press(aton.Key.ENTER) 
