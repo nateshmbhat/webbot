@@ -7,7 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from time import sleep 
 import sys , argparse , os  
 
-
+# 
 class Browser:
 
     def __init__(self , showWindow = False ):
@@ -26,9 +26,15 @@ class Browser:
         self.close_current_tab = self.driver.close ; 
 
 
-    def get_current_url(self): return self.driver.current_url ;
-    def get_current_window_handle(self):return self.driver.current_window_handle
-    def get_application_cache(self):return self.driver.application_cache
+    def get_current_url(self): 
+        '''Get the curren url of the webpage ''' 
+        return self.driver.current_url ;
+    def get_current_window_handle(self):
+        '''get the window handle of the current window or tab which the web driver is controlling'''
+        return self.driver.current_window_handle
+    def get_application_cache(self):
+        '''Get application cache'''
+        return self.driver.application_cache
     def get_desired_capabilities(self):return self.driver.desired_capabilities
     def get_log_types(self):return self.driver.log_types
     def get_title(self):return self.driver.title
@@ -266,7 +272,7 @@ It's same as clicking the back button in browser .
 
 
     def go_forward(self):
-        '''It's same as clicking the formward button in the browser'''
+        '''It's same as clicking the forward button in the browser'''
         self.driver.forward() ; 
 
 
@@ -300,13 +306,16 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
 
         Usage : 
-            web = Browser()
-            web.go_to('google.com')
 
-            web.click('Sign In') ; 
-            web.click('Sign In' , tag='p' ) ; 
-            web.click(id = 'elementid') ; 
-            web.click("NEXT" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
+        .. code-block:: python
+
+           web = Browser()
+           web.go_to('google.com')
+
+           web.click('Sign In') ; 
+           web.click('Sign In' , tag='span' ) ; 
+           web.click(id = 'elementid') ; 
+           web.click("NEXT" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
 
  
         '''
@@ -349,8 +358,11 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             - amount : positive integer for scrolling down or negative integer for scrolling up  
 
         :Usage:
-            scrolly(100) 
-            scrolly(-200) 
+
+        .. code-block:: python
+
+           scrolly(100) 
+           scrolly(-200) 
         '''
         assert isinstance(amount , int) 
         self.driver.execute_script("window.scrollBy(0, {});".format(amount) ) ;
@@ -363,8 +375,11 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             - amount : positive integer for scrolling right or negative integer for scrolling left
             
         :Usage:
-            scrollx(100) 
-            scrollx(-200)
+
+        .. code-block:: python
+
+           scrollx(100) 
+           scrollx(-200)
         '''
  
         assert isinstance(amount , int) 
@@ -379,10 +394,13 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             -key : A key present in Browser().Key added with any other key to get the key combination.
 
         :Usage:
-            press(web.Key.SHIFT + 'hello')  # Sends keys HELLO in capital letters 
 
-            press(web.Key.ENTER) 
-        
+        .. code-block:: python
+
+           press(web.Key.SHIFT + 'hello')  # Sends keys HELLO in capital letters 
+
+           press(web.Key.ENTER) 
+       
         '''
 
 
@@ -415,12 +433,15 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
 
         Usage : 
-            web = Browser()
-            web.go_to('mail.google.com')
 
-            web.type('Myemail@gmail.com' , into = 'Email' ) 
-            web.type('mysecretpassword' , into = 'Password' , id = 'passwdfieldID' )
-            web.type("hello" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
+        .. code-block:: python
+
+           web = Browser()
+           web.go_to('mail.google.com')
+
+           web.type('Myemail@gmail.com' , into = 'Email' ) 
+           web.type('mysecretpassword' , into = 'Password' , id = 'passwdfieldID' )
+           web.type("hello" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
 
         '''
 
