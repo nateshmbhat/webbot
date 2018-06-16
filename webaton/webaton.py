@@ -35,7 +35,7 @@ class Browser:
     def get_page_source(self):return self.driver.page_source
     
 
-    def __find_element__(self , text , tag , classname , id , number ,css_selector , xpath , match_level): 
+    def __find_element__(self , text , tag , classname , id , number ,css_selector , xpath , loose_match ): 
    
         self.element_to_score = OrderedDict()
         self.element_to_score_id_set = set();
@@ -147,6 +147,12 @@ class Browser:
                 element_fetch_helper(("//body//*[contains(translate(text() , '{}' , '{}' ) , '{}' )]".format(text.upper() , text.lower() , text.lower())) ,score=25) ; 
 
 
+        if(css_selector):
+            add_to_init_text_matches_score(  self.driver.find_elements_by_css_selector(css_selector) , 80)
+
+        if(xpath):
+            add_to_init_text_matches_score(  self.driver.find_elements_by_xpath(xpath) , 100 )
+
         if not text and tag:
             element_fetch_helper(("//body//{}".format(tag )) , score=50 )
 
@@ -187,7 +193,7 @@ class Browser:
 
 
 
-        if(not len(self.element_to_score.keys()) and match_level=='loose'):
+        if(not len(self.element_to_score.keys()) and loose_match):
             handle_loose_check()
 
 
@@ -276,7 +282,35 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         self.driver.get(url) 
 
 
-    def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'tight' , multiple = False):
+
+
+    def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , loose_match = True , multiple = False):
+        '''
+       Clicks an elements  
+
+        Args:
+            - text  : The text to type in the input field.
+            - tag   : The html tag to consider for the input field (eg : textarea) , defaults to 'input' 
+            - id    : id of the element to which the text must be sent
+            - classname : Any class of the input element to consider while selecting the input element to send the keys to. 
+            - number : if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
+            - multiple : if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
+            - css_selector : css_selector expression for better control over selecting the elements to perform the action.
+            - xpath : xpath expression for better control over selecting the elements to perform the action.
+            - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
+
+        Usage : 
+            web = Browser()
+            web.go_to('google.com')
+
+            web.click('Sign In') ; 
+            web.click('Sign In' , tag='p' ) ; 
+            web.click(id = 'elementid') ; 
+            web.click("NEXT" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
+
+ 
+        '''
+
 
         self.__reset_error__() ;
 
@@ -285,7 +319,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             return ;
 
 
-        maxElements = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , match_level)
+        maxElements = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , loose_match)
 
         temp_element_index_ = 1 ; 
 
@@ -294,10 +328,9 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                 if(element.is_displayed() and element.is_enabled()):
                     if((number==temp_element_index_) or multiple  ) :
                         element.click() ; 
+                        if(not multiple):
+                            break ; 
                     temp_element_index_+=1 ; 
-
-                if(not multiple):
-                    break ; 
 
             except Exception as E:
                 self.__set_error__(E , element  , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
@@ -364,18 +397,30 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
    
 
-    def type(self , text , into ='' , clear = True , multiple=False ,  tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , match_level = 'tight' ):
+    def type(self , text , into ='' , clear = True , multiple=False ,  tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , loose_match = True ):
         '''
         Types the text into an input field 
 
         Args:
             - text  : The text to type in the input field.
             - into  : This can be any placeholder or name or value that is seen inside the input text box as seen in a browser. If not specified , other params are considered or the first input field is selected.
-            - clear : Clears the input field before typing the text
+            - clear : Clears the input field before typing the text . Defaults to True 
             - tag   : The html tag to consider for the input field (eg : textarea) , defaults to 'input' 
             - id    : id of the element to which the text must be sent
             - classname : Any class of the input element to consider while selecting the input element to send the keys to. 
-            - number : 
+            - number : if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
+            - multiple : if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
+            - css_selector : css_selector expression for better control over selecting the elements to perform the action.
+            - xpath : xpath expression for better control over selecting the elements to perform the action.
+            - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
+
+        Usage : 
+            web = Browser()
+            web.go_to('mail.google.com')
+
+            web.type('Myemail@gmail.com' , into = 'Email' ) 
+            web.type('mysecretpassword' , into = 'Password' , id = 'passwdfieldID' )
+            web.type("hello" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
 
         '''
 
@@ -384,7 +429,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             ActionChains(self.driver).send_keys(text).perform() ;
             return ;  
 
-        maxElements = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , match_level)
+        maxElements = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , loose_match)
 
 
         temp_element_index_ = 1 ; 
@@ -397,11 +442,11 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                     if(clear):
                         element.clear() ; 
                     element.send_keys(text) ; 
+
+                    if(not multiple):
+                        break ; 
+
                 temp_element_index_+=1 ; 
-
-                if(not multiple):
-                    break ; 
-
 
             except exceptions.WebDriverException as E:
                 self.__set_error__(E , element , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
