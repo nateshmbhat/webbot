@@ -7,8 +7,16 @@ from selenium.webdriver.common.keys import Keys
 from time import sleep 
 import sys , argparse , os  
 
-# 
+ 
 class Browser:
+    '''
+    :__init__(showWindow = False):
+        The constructor takes showWindow flag as argument which Defaults to False. If it is set to true , all browser happen without showing up any GUI window .
+
+    :Key:
+        It contains the constants for all the special keys in the keyboard
+    
+    '''
 
     def __init__(self , showWindow = False ):
         options = webdriver.ChromeOptions()
@@ -77,7 +85,6 @@ class Browser:
                 
                 except exceptions.StaleElementReferenceException as E:
                     self.__set_error(E , element) ;
-                    print(E) ; 
                     continue ; 
 
 
@@ -117,7 +124,6 @@ class Browser:
 
                 except exceptions.NoSuchElementException as E:
                     self.__set_error(E , element) ; 
-                    print("Exception : {}".format(E)) ;
                 
 
 
@@ -221,7 +227,6 @@ class Browser:
 
 
         if(not len(self.element_to_score.keys())):
-            print("No element found ! ") ; 
             return []; 
 
 
@@ -252,7 +257,6 @@ class Browser:
         self._max_score_elements_ = max_scored_elements 
         self._max_score_ = max_score
 
-        print("\n\nMax SCORES " , max_scored_elements) ; 
         return (self._max_score_elements_ ) ; 
 
 
@@ -362,11 +366,6 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                 self.__set_error(E , element  , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) ) ; 
 
-                print("Exception raised for the element : " ,'''
-                tagname : {} , id : {}  , classname : {} , id_attribute : {}
-                '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
-                print("Exception : \n\n" , E) ; 
-        
 
 
     def scrolly(self , amount : int ):
@@ -491,12 +490,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                 self.__set_error(E , element , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')))
 
-                print("Exception raised for the element : " ,'''
-                tagname : {} , id : {}  , classname : {} , id_attribute : {}
-                '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
-                print("Exception : \n\n" , E) ; 
-
-
+                
 
 
 class Chrome:
