@@ -27,9 +27,9 @@ class Browser:
     
     '''
 
-    def __init__(self , showWindow = False ):
+    def __init__(self , showWindow = True ):
         options = webdriver.ChromeOptions()
-        if(showWindow):
+        if(not showWindow):
             options.set_headless(headless=True) ; 
 
         driverfilename = "chrome_linux" if  os.name=='posix' else "chrome_windows.exe" if os.name=='nt' else "chrome_mac" ; 
