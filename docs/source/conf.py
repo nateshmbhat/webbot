@@ -14,12 +14,12 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../webaton'))
+sys.path.insert(0, os.path.abspath('../../webbot'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'webaton'
+project = 'webbot'
 copyright = '2018, Natesh M Bhat'
 author = 'Natesh M Bhat'
 
@@ -102,7 +102,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'webatondoc'
+htmlhelp_basename = 'webbotdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -129,7 +129,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'webaton.tex', 'webaton Documentation',
+    (master_doc, 'webbot.tex', 'webbot Documentation',
      'Natesh M Bhat', 'manual'),
 ]
 
@@ -139,7 +139,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'webaton', 'webaton Documentation',
+    (master_doc, 'webbot', 'webbot Documentation',
      [author], 1)
 ]
 
@@ -150,8 +150,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'webaton', 'webaton Documentation',
-     author, 'webaton', 'One line description of project.',
+    (master_doc, 'webbot', 'webbot Documentation',
+     author, 'webbot', 'One line description of project.',
      'Miscellaneous'),
 ]
 

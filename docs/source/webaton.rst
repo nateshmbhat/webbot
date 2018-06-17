@@ -7,14 +7,14 @@ All features of the library can be accessed using the object of the class Browse
 
 .. code-block:: python
    
-   from webaton import Browser
+   from webbot import Browser
    driver = Browser() 
 
 
 Module contents
 ---------------
 
-.. automodule:: webaton
+.. automodule:: webbot
     :members: Browser
     :undoc-members:
     :show-inheritance:

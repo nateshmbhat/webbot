@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=build
-set SPHINXPROJ=webaton
+set SPHINXPROJ=webbot
 
 if "%1" == "" goto help
 

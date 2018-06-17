@@ -1,1 +1,1 @@
-from .webaton import Browser
+from .webbot import Browser

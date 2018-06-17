@@ -1,7 +1,7 @@
-webaton
+webbot
 =======
 
 .. toctree::
    :maxdepth: 4
 
-   webaton
+   webbot
