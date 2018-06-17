@@ -236,6 +236,7 @@ class Browser:
 
 
         if(not len(self.element_to_score.keys())):
+            self.__set_error('Element not found ! ' , message ="There is no element that matches your search criteria.")
             return []; 
 
 
@@ -271,7 +272,7 @@ class Browser:
 
     def __set_error(self , Exceptionerror , element = None  , message = ''):
         '''Set the error in case of any exception occured whenever performing any action like click or type '''
-        self.errors.append({Exceptionerror : Exceptionerror , element : element , message : message}) ; 
+        self.errors.append({'Exceptionerror' : Exceptionerror , 'element' : element , 'message' : message}) ; 
     
 
     def __reset_error(self ):
