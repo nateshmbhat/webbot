@@ -12,7 +12,7 @@ setup(
     version = '0.0.1',
     description = '' ,
     long_description = long_description , 
-    summary = 'Higher level Web Browser automation library for python'  ,
+    summary = 'Web Browser automation library for python'  ,
     author = 'Natesh M Bhat' ,
     url = 'https://github.com/nateshmbhat/webbot',
     author_email = 'nateshmbhatofficial@gmail.com' ,
