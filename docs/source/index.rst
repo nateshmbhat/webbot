@@ -27,7 +27,10 @@ quick-code
    :maxdepth: 2
    :caption: Contents:
 
+   installation
+   features
    webaton
+
 
 
 Indices and tables
