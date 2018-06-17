@@ -28,6 +28,10 @@ webbot provides a much feature rich automation than selenium for all kinds of au
 `pip install webbot`
 
 
+If "No distribution found error occurs" just update setuptools using 
+`pip install --upgrade setuptools`
+
+
 ## Quickstart :
 
 ##### Demo code 0 :

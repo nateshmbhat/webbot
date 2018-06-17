@@ -35,6 +35,9 @@ Installation :
 
 ``pip install webbot``
 
+If “No distribution found error occurs” just update setuptools using
+``pip install --upgrade setuptools``
+
 Quickstart :
 ------------
 
@@ -85,7 +88,8 @@ of them**
 
 --------------
 
-Documentation :
----------------
+Links :
+-------
 
-https://webbot.readthedocs.io
+-  Documentation : https://webbot.readthedocs.io
+-  Project home : https://github.com/nateshmbhat/webbot
