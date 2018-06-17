@@ -16,7 +16,6 @@ setup(
     author = 'Natesh M Bhat' ,
     url = 'https://github.com/nateshmbhat/webbot',
     author_email = 'nateshmbhatofficial@gmail.com' ,
-    #download_url = 'https://github.com/nateshmbhat/pyttsx3/archive/v2.6.tar.gz',
     keywords=['webbot', 'selenium' , 'autoweb','automate' , 'automation' ,'web' , 'autoweb' , 'auto' , 'pyauto', 'pyautogui'],
     classifiers = [] ,
 )
