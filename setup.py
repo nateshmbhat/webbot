@@ -3,7 +3,7 @@ from setuptools import setup
 
 install_requires = ['selenium']
 
-with open('README.rst' , 'r') as f:
+with open('README.rst' , 'r' , encoding='utf-8') as f:
     long_description = f.read() 
 
 setup(
@@ -18,16 +18,12 @@ setup(
     author_email = 'nateshmbhatofficial@gmail.com' ,
     keywords=['webbot', 'selenium' , 'autoweb','automate' , 'automation' ,'web' , 'autoweb' , 'auto' , 'pyauto', 'pyautogui'],
     classifiers = [
-          'Development Status :: 1 - Beta',
           'Environment :: Console',
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Developers',
           'Intended Audience :: System Administrators',
-          'License :: MIT',
           'Operating System :: MacOS :: MacOS X',
           'Operating System :: Microsoft :: Windows',
           'Operating System :: POSIX',
-          'Programming Language :: Python',
-          'Topic :: Communications :: Email',
-          'Topic :: Software Development :: Bug Tracking'] 
+          'Programming Language :: Python' ] 
 )

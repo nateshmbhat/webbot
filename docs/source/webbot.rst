@@ -1,5 +1,5 @@
 Library Documentation
-=====================
+------------------------
 
 All features of the library can be accessed using the object of the class Browser( ) . All examples below assume the object name as  **"driver"**
 
@@ -12,7 +12,7 @@ All features of the library can be accessed using the object of the class Browse
 
 
 Module contents
----------------
+~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: webbot
     :members: Browser

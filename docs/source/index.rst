@@ -1,13 +1,15 @@
-Welcome to the documentation of **webbot** !
+Documentation for **webbot**  ^_^
 =============================================
 
-webbot is a web browser automation library which is built upon the selenium framework and works at a much higher level and eliminates much of the code you would need in selenium .
+webbot is a web browser automation library which is built upon selenium and has a feature rich library with hassle-less automation of the web browsers for developers and end users alike.
+
+The library is used to automate the actions of a user interacting with the browser.
 
 Almost all the time , the workflow of any web automation is to find an element and perform some action like click or type into an input field etc on that element. webbot takes care of all these thing internally and gives direct methods to **click , type , special key press  , scroll , switch_tabs** and a whole lot more functionalities without having to worry about implementing everything from scracth yourself.
 
 
-quick-code
-^^^^^^^^^^^^
+Quick demo code ^_^
+^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -26,6 +28,7 @@ quick-code
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   :numbered:
 
 
    installation

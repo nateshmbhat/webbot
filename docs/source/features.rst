@@ -1,5 +1,5 @@
-Features : 
------------
+Features  
+=============
 
 - click any button or link without having to worry about finding the element first or knowing css_selector etc
 - Automation works even in case of webpages with dynamically changing id and classname
@@ -10,4 +10,9 @@ Features :
 - Perform an action on webpage elements by applying various filters to select the elements . 
 - Perfrom action on multiple elements at once.
 - If certain elements don't have text or visible property , then use either their id , class , css_selector , xpath , tag etc.
+- The entire automation process can be made without having to open the browser window i.e in the background as a console process (see docs for more details )
+ 
+
+
+**For Furthur features and functionalities see the Library Documentation.**
 
