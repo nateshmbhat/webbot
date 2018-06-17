@@ -21,27 +21,44 @@ class Browser:
         self.Key = Keys ;
         self.errors = list() ; 
 
+
         [setattr(self , function  , getattr(self.driver , function) ) for function in ['add_cookie' ,'delete_all_cookies','delete_cookie' , 'execute_script' , 'execute_async_script' ,'fullscreen_window','get_cookie' ,'get_cookies','get_log','get_network_conditions','get_screenshot_as_base64' ,'get_screenshot_as_file','get_screenshot_as_png','get_window_position','get_window_rect','get_window_size','maximize_window','minimize_window','implicitly_wait','quit','refresh','save_screenshot','set_network_conditions','set_page_load_timeout','set_script_timeout','set_window_position','set_window_rect','start_client','start_session','stop_client','switch_to_alert']]
 
-        self.close_current_tab = self.driver.close ; 
 
+    def close_current_tag(self):
+        '''Closes the current tab which the driver is controlling'''
+        self.driver.close() ;
 
     def get_current_url(self): 
         '''Get the curren url of the webpage ''' 
         return self.driver.current_url ;
+
     def get_current_window_handle(self):
         '''get the window handle of the current window or tab which the web driver is controlling'''
         return self.driver.current_window_handle
+        
     def get_application_cache(self):
-        '''Get application cache'''
+        '''Get application cache object to interact with the browser app cache '''
         return self.driver.application_cache
-    def get_desired_capabilities(self):return self.driver.desired_capabilities
-    def get_log_types(self):return self.driver.log_types
-    def get_title(self):return self.driver.title
-    def get_page_source(self):return self.driver.page_source
+
+    def get_desired_capabilities(self):
+        '''returns the drivers current desired capabilities being used''' 
+        return self.driver.desired_capabilities
+
+    def get_log_types(self):
+        '''Get supported log types to be used by the get_log method'''
+        return self.driver.log_types
+
+    def get_title(self):
+        '''Gets the title of the current webpage '''
+        return self.driver.title
+
+    def get_page_source(self):
+        ''' Gets the html source code for the current webpage '''
+        return self.driver.page_source
     
 
-    def __find_element__(self , text , tag , classname , id , number ,css_selector , xpath , loose_match ): 
+    def __fine_element(self , text , tag , classname , id , number ,css_selector , xpath , loose_match ): 
    
         self.element_to_score = OrderedDict()
         self.element_to_score_id_set = set();
@@ -59,7 +76,7 @@ class Browser:
                     element_tag_name = element.tag_name 
                 
                 except exceptions.StaleElementReferenceException as E:
-                    self.__set_error__(E , element) ;
+                    self.__set_error(E , element) ;
                     print(E) ; 
                     continue ; 
 
@@ -99,7 +116,7 @@ class Browser:
                     
 
                 except exceptions.NoSuchElementException as E:
-                    self.__set_error__(E , element) ; 
+                    self.__set_error(E , element) ; 
                     print("Exception : {}".format(E)) ;
                 
 
@@ -239,13 +256,12 @@ class Browser:
         return (self._max_score_elements_ ) ; 
 
 
-
-    def __set_error__(self , Exceptionerror , element = None  , message = ''):
+    def __set_error(self , Exceptionerror , element = None  , message = ''):
         '''Set the error in case of any exception occured whenever performing any action like click or type '''
         self.errors.append({Exceptionerror : Exceptionerror , element : element , message : message}) ; 
     
 
-    def __reset_error__(self ):
+    def __reset_error(self ):
         self.errors = list() ; 
 
 
@@ -292,7 +308,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
     def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , loose_match = True , multiple = False):
         '''
-       Clicks an elements  
+       Clicks one or more webpage elements 
 
         Args:
             - text  : The text to type in the input field.
@@ -309,26 +325,27 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
         .. code-block:: python
 
-           web = Browser()
-           web.go_to('google.com')
+           driver = Browser()
+           driver.go_to('google.com')
 
-           web.click('Sign In') ; 
-           web.click('Sign In' , tag='span' ) ; 
-           web.click(id = 'elementid') ; 
-           web.click("NEXT" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
+           driver.click('Sign In') ; 
+           driver.click('Sign In' , tag='span' ) ; 
+           driver.click(id = 'elementid') ; 
 
+           # if there are multiple elements matching the text "NEXT" , then 2'nd element is clicked (since number paramter is 2 ) . 
+           driver.click("NEXT" , tag='span' , number = 2 ) ; 
  
         '''
 
 
-        self.__reset_error__() ;
+        self.__reset_error() ;
 
         if(not (text or id or classname or css_selector or xpath )):
             ActionChains(self.driver).click().perform()
             return ;
 
 
-        maxElements = self.__find_element__(text , tag , classname , id , number , css_selector , xpath , loose_match)
+        maxElements = self.__fine_element(text , tag , classname , id , number , css_selector , xpath , loose_match)
 
         temp_element_index_ = 1 ; 
 
@@ -342,7 +359,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                     temp_element_index_+=1 ; 
 
             except Exception as E:
-                self.__set_error__(E , element  , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
+                self.__set_error(E , element  , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) ) ; 
 
                 print("Exception raised for the element : " ,'''
@@ -350,6 +367,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')) )
                 print("Exception : \n\n" , E) ; 
         
+
 
     def scrolly(self , amount : int ):
         '''Scroll vertically by the specified amount 
@@ -397,14 +415,14 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
         .. code-block:: python
 
-           press(web.Key.SHIFT + 'hello')  # Sends keys HELLO in capital letters 
+           press(driver.Key.SHIFT + 'hello')  # Sends keys HELLO in capital letters 
 
-           press(web.Key.ENTER) 
+           press(driver.Key.ENTER) 
        
         '''
 
 
-        self.__reset_error__() ; 
+        self.__reset_error() ; 
         specialkeys = [key for key in dir(Keys) if '_' not in key]
         action = ActionChains(self.driver).key_down(key[0]) ; 
         for c in key[1:]:
@@ -436,21 +454,21 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
         .. code-block:: python
 
-           web = Browser()
-           web.go_to('mail.google.com')
+           driver = Browser()
+           driver.go_to('mail.google.com')
 
-           web.type('Myemail@gmail.com' , into = 'Email' ) 
-           web.type('mysecretpassword' , into = 'Password' , id = 'passwdfieldID' )
-           web.type("hello" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
+           driver.type('Myemail@gmail.com' , into = 'Email' ) 
+           driver.type('mysecretpassword' , into = 'Password' , id = 'passwdfieldID' )
+           driver.type("hello" , tag='span' , number = 2 ) ;  # if there are multiple elements , then 2nd one is considered for operation (since number paramter is 2 ) . 
 
         '''
 
-        self.__reset_error__()  ; 
+        self.__reset_error()  ; 
         if(not (into or id or classname or css_selector or xpath)):
             ActionChains(self.driver).send_keys(text).perform() ;
             return ;  
 
-        maxElements = self.__find_element__(into , tag , classname , id , number , css_selector , xpath , loose_match)
+        maxElements = self.__fine_element(into , tag , classname , id , number , css_selector , xpath , loose_match)
 
 
         temp_element_index_ = 1 ; 
@@ -470,7 +488,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                 temp_element_index_+=1 ; 
 
             except exceptions.WebDriverException as E:
-                self.__set_error__(E , element , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
+                self.__set_error(E , element , ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')))
 
                 print("Exception raised for the element : " ,'''
