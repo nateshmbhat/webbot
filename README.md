@@ -77,6 +77,7 @@ web.click('Post')
 
 <br>
 
-## Documentation : 
+## Links : 
 
-https://webbot.readthedocs.io
++ Documentation : https://webbot.readthedocs.io
++ Project home  : https://github.com/nateshmbhat/webbot

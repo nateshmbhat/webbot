@@ -27,7 +27,9 @@ quick-code
    :maxdepth: 2
    :caption: Contents:
 
+
    installation
+   license
    features
    webbot
 

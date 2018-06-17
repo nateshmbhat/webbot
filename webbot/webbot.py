@@ -10,11 +10,20 @@ import sys , argparse , os
  
 class Browser:
     '''
+
+    **Constructor**
+
     :__init__(showWindow = False):
         The constructor takes showWindow flag as argument which Defaults to False. If it is set to true , all browser happen without showing up any GUI window .
 
+
+    Object attributes:  Key , errors
+
     :Key:
-        It contains the constants for all the special keys in the keyboard
+        - It contains the constants for all the special keys in the keyboard which can be used in the *press* method 
+
+    errors:
+        - It is a list cotaining all the errors which might have occured during performing an action like click , type etc
     
     '''
 
