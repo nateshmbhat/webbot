@@ -9,7 +9,8 @@ with open('README.rst' , 'r' , encoding='utf-8') as f:
 setup(
     name='webbot',
     packages = ['webbot','webbot.drivers'] ,
-    version = '0.0.3',
+    version = '0.0.4',
+    install_requires= install_requires ,
     long_description = long_description , 
     package_data = {'' : [r'drivers/*']} , 
     description = 'Web Browser automation library for python with more features and simpler api than selenium' ,
