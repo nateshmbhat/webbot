@@ -1,4 +1,5 @@
 from selenium import webdriver ;
+import stat
 import re ; 
 from collections import OrderedDict
 from selenium.common import exceptions
@@ -34,6 +35,8 @@ class Browser:
 
         driverfilename = "chrome_linux" if  os.name=='posix' else "chrome_windows.exe" if os.name=='nt' else "chrome_mac" ; 
         driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
+        os.chmod(driverpath , 0o755 ) 
+
         self.driver = webdriver.Chrome(executable_path=driverpath , chrome_options=options)
         self.Key = Keys ;
         self.errors = list() ; 
