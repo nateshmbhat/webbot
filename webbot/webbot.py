@@ -6,6 +6,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from time import sleep 
 import sys , argparse , os  
+import string
+
+# TODO : ADD AN ASSERT TEXT OR ELEMENT FUNCTION
 
  
 class Browser:
@@ -23,7 +26,7 @@ class Browser:
         - It contains the constants for all the special keys in the keyboard which can be used in the *press* method 
 
     errors:
-        - It is a list cotaining all the errors which might have occured during performing an action like click , type etc
+        - It is a list containing all the errors which might have occured during performing an action like click , type etc
     
     '''
 
@@ -313,7 +316,9 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         
         '''
         if(not re.match("\w+://.*" , url )):
-            url = "https://" + url ; 
+            if(url[:4]=="www."):
+                url = url[4:]
+            url = "https://www." + url ; 
 
         self.driver.get(url) 
 
@@ -415,7 +420,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
     def press(self , key):
 
-        '''Press any special key or a key combination involving Ctrl , Alt , Shift 
+        '''Press any special key or a key combination involving Ctrl , Alt , Shift
 
         :Args: 
             -key : A key present in Browser().Key added with any other key to get the key combination.
@@ -426,19 +431,27 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
            press(driver.Key.SHIFT + 'hello')  # Sends keys HELLO in capital letters 
 
+           press(driver.Key.CONTROL + driver.Key.UP ) 
+
            press(driver.Key.ENTER) 
        
         '''
 
+        action = ActionChains(self.driver) ; 
 
-        self.__reset_error() ; 
-        specialkeys = [key for key in dir(Keys) if '_' not in key]
-        action = ActionChains(self.driver).key_down(key[0]) ; 
-        for c in key[1:]:
-            action = (action.key_down(c) if c in specialkeys else action.send_keys(c)) ; 
+        for char in key:
+            action = action.key_down(char) ; 
 
-        action.key_up(Keys.CONTROL).key_up(Keys.ALT).key_up(Keys.SHIFT).key_up(Keys.COMMAND).key_up(Keys.LEFT_SHIFT).key_up(Keys.LEFT_CONTROL).key_up(Keys.LEFT_ALT).perform() ; 
+        action.perform() ; 
+        action.reset_actions() ; 
 
+
+        for char in key:
+            if(char not in string.ascii_letters):
+                action = action.key_up(char) ; 
+
+        action.perform() ; 
+        action.reset_actions() ; 
 
    
 
