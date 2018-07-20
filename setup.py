@@ -8,7 +8,7 @@ with open('README.rst' , 'r' , encoding='utf-8') as f:
 setup(
     name='webbot',
     packages = ['webbot','webbot.drivers'] ,
-    version = '0.0.7',
+    version = '0.0.9',
     long_description = long_description , 
     install_requires = ['selenium'] , 
     package_data = {'' : [r'drivers/*']} , 
