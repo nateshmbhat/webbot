@@ -39,9 +39,14 @@ class Browser:
         if(not showWindow):
             options.set_headless(headless=True) ; 
 
-        driverfilename = "chrome_linux" if  sys.platform =='linux' else "chrome_windows.exe" if sys.platform =='win32' else "chrome_mac" ; 
-        driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
+        if sys.platform == 'linux' or sys.platform == 'linux2':
+            driverfilename = 'chrome_linux'
+        elif sys.platform == 'win32':
+            driverfilename = 'chrome_windows'
+        elif sys.platform == 'darwin':
+            driverfilename = 'chrome_mac'
 
+        driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
         os.chmod(driverpath , 0o755 ) 
 
         self.driver = webdriver.Chrome(executable_path=driverpath , chrome_options=options)
