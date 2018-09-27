@@ -39,7 +39,7 @@ class Browser:
         if(not showWindow):
             options.set_headless(headless=True) ; 
 
-        driverfilename = "chrome_linux" if  os.name=='posix' else "chrome_windows.exe" if os.name=='nt' else "chrome_mac" ; 
+        driverfilename = "chrome_linux" if  sys.platform =='linux' else "chrome_windows.exe" if sys.platform =='win32' else "chrome_mac" ; 
         driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
 
         os.chmod(driverpath , 0o755 ) 
