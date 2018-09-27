@@ -45,8 +45,8 @@ class Browser:
             driverfilename = 'chrome_windows'
         elif sys.platform == 'darwin':
             driverfilename = 'chrome_mac'
-
         driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
+
         os.chmod(driverpath , 0o755 ) 
 
         self.driver = webdriver.Chrome(executable_path=driverpath , chrome_options=options)
