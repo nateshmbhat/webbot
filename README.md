@@ -39,7 +39,7 @@ If "No distribution found error occurs" just update setuptools using
 ```python
 from webbot import Browser 
 web = Browser()
-web.go_to('google.com') 
+web.go_to('google.com/ncr') 
 web.type('hello its me')  # or web.press(web.Key.SHIFT + 'hello its me')
 web.press(web.Key.ENTER)
 web.go_back()
