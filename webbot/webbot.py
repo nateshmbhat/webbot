@@ -31,7 +31,7 @@ class Browser:
     
     '''
 
-    def __init__(self , showWindow = True ):
+    def __init__(self , showWindow = False ):
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-dev-shm-usage") ;
         options.add_argument("--no-sandbox") ;
