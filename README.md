@@ -9,9 +9,11 @@ webbot provides a much feature rich automation than selenium for all kinds of au
 
 ## Features : 
 
++ Use any combination of selectors like id, name, text, css etc to perform actions on elements.
++ Automate and test pages loaded dynamically by javascript. 
 + click any button or link without having to worry about finding the element first or knowing css_selector etc
-+ Automation works even in case of webpages with dynamically changing id and classname
-+ type text into input fields 
++ Automation designed to work even in case of webpages with dynamically changing id and classname
++ Immensely minimizes the code required for performing input actions like clicks and keyboard actions. 
 + Smart scoring algorithm which finds the best match for the element on which you want to perform the action . 
 + Simulate key presses and special key combinations
 + bidirectional scrolling
