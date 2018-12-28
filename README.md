@@ -1,6 +1,6 @@
 # webbot 
 
-Web automation library for python which is based on the selenium framework for web browser automation.
+Web automation library for python for web browser automation and end to end UI testing.
 
 webbot provides a much feature rich automation than selenium for all kinds of automation of webpage. Since the major portion of web automation is to perform actions like click and type into webpage elements , webbot automatically handles finding the right elements to perform the actions.
 
