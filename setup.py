@@ -8,11 +8,11 @@ with open('README.rst' , 'r' , encoding='utf-8') as f:
 setup(
     name='webbot',
     packages = ['webbot','webbot.drivers'] ,
-    version = '0.0.9',
+    version = '0.1.0',
     long_description = long_description , 
     install_requires = ['selenium'] , 
     package_data = {'' : [r'drivers/*']} , 
-    description = 'Web Browser automation library for python with more features and simpler api than selenium' ,
+    description = 'Web Browser automation and testing library for python with more features and simpler api than selenium' ,
     author = 'Natesh M Bhat' ,
     url = 'https://github.com/nateshmbhat/webbot',
     author_email = 'nateshmbhatofficial@gmail.com' ,
@@ -21,9 +21,15 @@ setup(
           'Environment :: Console',
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Developers',
+          'Intended Audience :: Information Technology',
           'Intended Audience :: System Administrators',
           'Operating System :: MacOS :: MacOS X',
           'Operating System :: Microsoft :: Windows',
           'Operating System :: POSIX',
-          'Programming Language :: Python' ] 
+          'License :: OSI Approved :: MIT License' , 
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7'
+          ] 
 )

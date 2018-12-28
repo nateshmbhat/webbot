@@ -11,15 +11,18 @@ webbot provides a much feature rich automation than selenium for all kinds of au
 
 + Use any combination of selectors like id, name, text, css etc to perform actions on elements with one line of code. 
 + Automate and test pages loaded dynamically by javascript. 
-+ click any button or link without having to worry about finding the element first or knowing css_selector etc
++ Click any button or link without having to worry about finding the element first or knowing css_selectors , xpath etc
++ Smart scoring algorithm which finds the best matching elements on which you want to perform the action . 
 + Automation designed to work even in case of webpages with dynamically changing id and classname
 + Immensely minimizes the code required for performing input actions like clicks and keyboard actions. 
-+ Smart scoring algorithm which finds the best match for the element on which you want to perform the action . 
++ Get webpage source , cookies , total tabs , webpage title etc..
 + Simulate key presses and special key combinations
-+ bidirectional scrolling
++ Bidirectional scrolling
 + Perform an action on webpage elements by applying various filters to select the elements . 
 + Perfrom action on multiple elements at once.
 + If certain elements don't have text or visible property , then use either their id , class , css_selector , xpath , tag etc.
++ The entire automation process can be made without having to open the browser window i.e in the background as a console process (see docs for more details )
+
 
 
 <br>
@@ -49,7 +52,7 @@ web.click('Sign in')
 web.type('mymail@gmail.com' , into='Email')
 web.click('NEXT' , tag='span')
 web.type('mypassword' , into='Password' , id='passwordFieldId')
-web.click('NEXT' , tag='span') # you are logged in . oohoooo
+web.click('NEXT' , tag='span') # you are logged in . woohoooo
 ```
 
 <br>
@@ -85,5 +88,5 @@ web.click('Post')
 
 ## Links : 
 
-+ Documentation : https://webbot.readthedocs.io
++ Full Documentation : https://webbot.readthedocs.io
 + Project home  : https://github.com/nateshmbhat/webbot
