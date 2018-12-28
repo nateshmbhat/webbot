@@ -88,15 +88,56 @@ class Browser:
     def get_page_source(self):
         ''' Gets the html source code for the current webpage '''
         return self.driver.page_source
+
+
+    def find_elements(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , loose_match = True):
+        '''Returns a list of elements that best fit the given parameters'''
+        return self.__find_element(text, tag , classname , id , number , css_selector , xpath , loose_match)
+
+
+    def exists(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , loose_match = True):
+        '''
+        Check if an element exists or not.
+
+        Returns True if any element that best fits the given parameters exists.
+        Return False if no such element exists.
+
+
+        :Args:
+            - text  : The text of the element.
+            - tag   : The html tag of the element to look for (eg : button , a ) , defaults to 'button' 
+            - id    : id of the element
+            - classname : Any class of the element to search for.
+            - number : if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
+            - multiple : if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
+            - css_selector : css_selector expression for better control over selecting the elements to perform the action.
+            - xpath : xpath expression for better control over selecting the elements to perform the action.
+            - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
+
+
+        :Usage : 
+
+        .. code-block:: python
+
+           driver = Browser()
+           driver.go_to('google.com')
+
+           driver.exists('Sign In') ;  #Returns True
+           driver.exists('yahoo') ;  #Returns False
+        '''
+
+        return True if len(self.__find_element(text, tag , classname , id , number , css_selector , xpath , loose_match)) else False ; 
+
     
 
-    def __fine_element(self , text , tag , classname , id , number ,css_selector , xpath , loose_match ): 
+    def __find_element(self , text , tag , classname , id , number ,css_selector , xpath , loose_match ): 
+        '''Returns a list of elements that best fit the given parameters'''
    
         self.element_to_score = OrderedDict()
         self.element_to_score_id_set = set();
         if(tag=='link'):tag = 'a' ; 
 
-        def add_to_init_text_matches_score(text_matches_elements : list , score :int )->None:
+        def add_to_init_text_matches_score(text_matches_elements , score ):
             '''Extends a dictionary and maps it with the text_matched_element with the score'''
 
             for element in text_matches_elements:
@@ -339,20 +380,20 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
     def click(self , text='' , tag='button', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , loose_match = True , multiple = False):
         '''
-       Clicks one or more webpage elements 
+       Clicks one or more elements on the webpage.
 
-        Args:
-            - text  : The text to type in the input field.
-            - tag   : The html tag to consider for the input field (eg : textarea) , defaults to 'input' 
-            - id    : id of the element to which the text must be sent
-            - classname : Any class of the input element to consider while selecting the input element to send the keys to. 
+        :Args:
+            - text  : The text of the element that needs to be clicked.
+            - tag   : The html tag of the element to be clicked (eg : button , a ) , defaults to 'button' 
+            - id    : id of the element
+            - classname : Any class of the element to consider while selecting the element to click. 
             - number : if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
             - multiple : if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
             - css_selector : css_selector expression for better control over selecting the elements to perform the action.
             - xpath : xpath expression for better control over selecting the elements to perform the action.
             - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
 
-        Usage : 
+        :Usage: 
 
         .. code-block:: python
 
@@ -376,7 +417,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             return ;
 
 
-        maxElements = self.__fine_element(text , tag , classname , id , number , css_selector , xpath , loose_match)
+        maxElements = self.__find_element(text , tag , classname , id , number , css_selector , xpath , loose_match)
 
         temp_element_index_ = 1 ; 
 
@@ -395,7 +436,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
 
 
-    def scrolly(self , amount : int ):
+    def scrolly(self , amount ):
         '''Scroll vertically by the specified amount 
 
         :Args: 
@@ -412,7 +453,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         self.driver.execute_script("window.scrollBy(0, {});".format(amount) ) ;
 
 
-    def scrollx(self , amount : int ):
+    def scrollx(self , amount ):
         '''Scroll horizontally by the specified amount 
 
         :Args:  
@@ -428,7 +469,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
  
         assert isinstance(amount , int) 
         self.driver.execute_script("window.scrollBy( {}, 0 );".format(amount) ) ;
-    
+
 
     def press(self , key):
 
@@ -465,13 +506,15 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         action.perform() ; 
         action.reset_actions() ; 
 
+
+    
    
 
     def type(self , text , into ='' , clear = True , multiple=False ,  tag='input', id ='' , classname ='',  number = 1 , css_selector='' , xpath='' , loose_match = True ):
         '''
         Types the text into an input field 
 
-        Args:
+        :Args:
             - text  : The text to type in the input field.
             - into  : This can be any placeholder or name or value that is seen inside the input text box as seen in a browser. If not specified , other params are considered or the first input field is selected.
             - clear : Clears the input field before typing the text . Defaults to True 
@@ -484,7 +527,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             - xpath : xpath expression for better control over selecting the elements to perform the action.
             - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
 
-        Usage : 
+        :Usage: 
 
         .. code-block:: python
 
@@ -502,7 +545,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             ActionChains(self.driver).send_keys(text).perform() ;
             return ;  
 
-        maxElements = self.__fine_element(into , tag , classname , id , number , css_selector , xpath , loose_match)
+        maxElements = self.__find_element(into , tag , classname , id , number , css_selector , xpath , loose_match)
 
 
         temp_element_index_ = 1 ; 
@@ -526,12 +569,6 @@ If the url doesn't contain the protocol of the url  , then by default https is c
                 '''.format( element.tag_name , element.id , element.get_attribute('class') , element.get_attribute('id')))
 
                 
-
-
-class Chrome:
-    pass
-
-
 if(__name__=='__main__'):
     aton = Browser() ; 
     aton.go_to('https://google.com')
