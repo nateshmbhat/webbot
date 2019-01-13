@@ -11,7 +11,7 @@ setup(
     version = '0.1.0',
     long_description = long_description , 
     install_requires = ['selenium'] , 
-    package_data = {'' : [r'drivers/*']} , 
+    package_data = {'' : [r'drivers/*']},
     description = 'Web Browser automation and testing library for python with more features and simpler api than selenium' ,
     author = 'Natesh M Bhat' ,
     url = 'https://github.com/nateshmbhat/webbot',

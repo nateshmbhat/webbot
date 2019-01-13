@@ -1,8 +1,16 @@
 webbot
 ======
 
-Web automation library for python which is based on the selenium
-framework for web browser automation.
+`Downloads <https://pepy.tech/project/webbot>`__ |Downloads|
+` <https://webbot.readthedocs.io/en/latest/>`__
+` <https://github.com/nateshmbhat/webbot>`__
+` <https://github.com/nateshmbhat/webbot>`__
+` <https://github.com/nateshmbhat/webbot>`__
+` <https://github.com/nateshmbhat/webbot>`__
+` <https://github.com/nateshmbhat>`__
+
+Web automation library for python for web browser automation and end to
+end UI testing.
 
 webbot provides a much feature rich automation than selenium for all
 kinds of automation of webpage. Since the major portion of web
@@ -13,20 +21,28 @@ perform the actions.
 Features :
 ----------
 
--  click any button or link without having to worry about finding the
-   element first or knowing css_selector etc
--  Automation works even in case of webpages with dynamically changing
-   id and classname
--  type text into input fields
--  Smart scoring algorithm which finds the best match for the element on
+-  Use any combination of selectors like id, name, text, css etc to
+   perform actions on elements with one line of code.
+-  Automate and test pages loaded dynamically by javascript.
+-  Click any button or link without having to worry about finding the
+   element first or knowing css_selectors , xpath etc
+-  Smart scoring algorithm which finds the best matching elements on
    which you want to perform the action .
+-  Automation designed to work even in case of webpages with dynamically
+   changing id and classname
+-  Immensely minimizes the code required for performing input actions
+   like clicks and keyboard actions.
+-  Get webpage source , cookies , total tabs , webpage title etc..
 -  Simulate key presses and special key combinations
--  bidirectional scrolling
+-  Bidirectional scrolling
 -  Perform an action on webpage elements by applying various filters to
    select the elements .
 -  Perfrom action on multiple elements at once.
 -  If certain elements don’t have text or visible property , then use
    either their id , class , css_selector , xpath , tag etc.
+-  The entire automation process can be made without having to open the
+   browser window i.e in the background as a console process (see docs
+   for more details )
 
 --------------
 
@@ -56,7 +72,7 @@ Demo code 0 :
    web.type('mymail@gmail.com' , into='Email')
    web.click('NEXT' , tag='span')
    web.type('mypassword' , into='Password' , id='passwordFieldId')
-   web.click('NEXT' , tag='span') # you are logged in . oohoooo
+   web.click('NEXT' , tag='span') # you are logged in . woohoooo
 
 Demo code 1 :
 '''''''''''''
@@ -91,5 +107,8 @@ of them**
 Links :
 -------
 
--  Documentation : https://webbot.readthedocs.io
+-  Full Documentation : https://webbot.readthedocs.io
 -  Project home : https://github.com/nateshmbhat/webbot
+
+.. |Downloads| image:: https://pepy.tech/badge/webbot/week
+
