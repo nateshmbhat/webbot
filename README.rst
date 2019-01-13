@@ -1,16 +1,6 @@
 webbot
 ======
 
-`Downloads <https://pepy.tech/project/webbot>`__ |Downloads|
-`<https://pepy.tech/badge/webbot/week>`__ |Downloads|
-` <https://img.shields.io/github/languages/code-size/nateshmbhat/webbot.svg?style=plastic>`__
-` <https://img.shields.io/github/license/nateshmbhat/webbot?style=plastic>`__
-` <https://img.shields.io/pypi/v/webbot.svg?style=plastic>`__
-` <https://img.shields.io/badge/author-nateshmbhat-blue.svg>`__
-` <https://img.shields.io/github/languages/top/nateshmbhat/webbot.svg?style=plastic>`__
-
-
-
 
 Web automation library for python for web browser automation and end to
 end UI testing.
