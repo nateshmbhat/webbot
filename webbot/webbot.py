@@ -42,7 +42,7 @@ class Browser:
         if sys.platform == 'linux' or sys.platform == 'linux2':
             driverfilename = 'chrome_linux'
         elif sys.platform == 'win32':
-            driverfilename = 'chrome_windows'
+            driverfilename = 'chrome_windows.exe'
         elif sys.platform == 'darwin':
             driverfilename = 'chrome_mac'
         driverpath =  os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep , driverfilename))
