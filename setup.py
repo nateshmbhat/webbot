@@ -1,6 +1,7 @@
 import platform
 from setuptools import setup
 
+VERSION="0.1.3"
 
 with open('README.rst' , 'r' , encoding='utf-8') as f:
     long_description = f.read() 
@@ -8,7 +9,7 @@ with open('README.rst' , 'r' , encoding='utf-8') as f:
 setup(
     name='webbot',
     packages = ['webbot','webbot.drivers'] ,
-    version = '0.1.2',
+    version = VERSION , 
     long_description = long_description , 
     install_requires = ['selenium'] , 
     package_data = {'' : [r'drivers/*']},
