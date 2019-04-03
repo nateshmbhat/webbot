@@ -17,7 +17,7 @@ class Browser:
 
     **Constructor**
 
-    :__init__(showWindow = False):
+    :__init__(showWindow = True):
         The constructor takes showWindow flag as argument which Defaults to False. If it is set to true , all browser happen without showing up any GUI window .
 
 
