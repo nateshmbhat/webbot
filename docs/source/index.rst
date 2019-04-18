@@ -1,7 +1,7 @@
 Documentation for **webbot**  ^_^
 =============================================
 
-webbot is a web browser automation library which is built upon `Selenium <https://www.seleniumhq.org/>`_. and has a feature-rich library with hassle-free automation of the web browsers for developers and end users alike.
+webbot is a web browser automation library which is built upon `Selenium <https://www.seleniumhq.org/>`_ and has a feature-rich library with hassle-free automation of the web browsers for developers and end users alike.
 
 The library is used to automate the actions of a user interacting with the browser.
 
