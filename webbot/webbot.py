@@ -521,8 +521,8 @@ If the url doesn't contain the protocol of the url  , then by default https is c
             - tag: The html tag to consider for the input field (eg: textarea), defaults to 'input' 
             - id: id of the element to which the text must be sent
             - classname: Any class of the input element to consider while selecting the input element to send the keys to. 
-            - number: if there are multiple elements matching the criteria of other parameters, number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action. 
-            - multiple: if True, the specified action is performed on all the elements matching the criteria and not just the first element. If it is true, number parameter is ignored. Defaults to False 
+            - number: If there are multiple elements matching the criteria of other parameters, number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action. 
+            - multiple: If True, the specified action is performed on all the elements matching the criteria and not just the first element. If it is true, number parameter is ignored. Defaults to False 
             - css_selector: css_selector expression for better control over selecting the elements to perform the action.
             - xpath: xpath expression for better control over selecting the elements to perform the action.
             - loose_match: If loose_match is True then if no element of specified tag is found, all other tags are considered to search for the text, else only specified tag is considered for matching elements. Defaults to True 
