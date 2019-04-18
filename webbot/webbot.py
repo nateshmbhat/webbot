@@ -383,15 +383,15 @@ If the url doesn't contain the protocol of the url  , then by default https is c
        Clicks one or more elements on the webpage.
 
         :Args:
-            - text  : The text of the element that needs to be clicked.
-            - tag   : The html tag of the element to be clicked (eg : button , a ) , defaults to 'button' 
-            - id    : id of the element
-            - classname : Any class of the element to consider while selecting the element to click. 
-            - number : if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
-            - multiple : if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
-            - css_selector : css_selector expression for better control over selecting the elements to perform the action.
-            - xpath : xpath expression for better control over selecting the elements to perform the action.
-            - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
+            - text: The text of the element that needs to be clicked.
+            - tag: The html tag of the element to be clicked (eg : button , a ) , defaults to 'button' 
+            - id: id of the element
+            - classname: Any class of the element to consider while selecting the element to click. 
+            - number: if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
+            - multiple: if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
+            - css_selector: css_selector expression for better control over selecting the elements to perform the action.
+            - xpath: xpath expression for better control over selecting the elements to perform the action.
+            - loose_match:  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
 
         :Usage: 
 
