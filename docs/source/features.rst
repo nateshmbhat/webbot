@@ -17,5 +17,5 @@ Features
  
 
 
-**For Furthur features and functionalities see the Library Documentation.**
+**For further features and functionalities see the Library Documentation.**
 
