@@ -384,14 +384,14 @@ If the url doesn't contain the protocol of the url  , then by default https is c
 
         :Args:
             - text: The text of the element that needs to be clicked.
-            - tag: The html tag of the element to be clicked (eg : button , a ) , defaults to 'button' 
+            - tag: The html tag of the element to be clicked (eg: button, a), defaults to 'button'. 
             - id: id of the element
-            - classname: Any class of the element to consider while selecting the element to click. 
-            - number: if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
-            - multiple: if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
+            - classname: Any class of the element to consider while selecting the element to click.
+            - number: If there are multiple elements matching the criteria of other parameters, number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action. 
+            - multiple: If True, the specified action is performed on all the elements matching the criteria and not just the first element. If it is true, number parameter is ignored. Defaults to False 
             - css_selector: css_selector expression for better control over selecting the elements to perform the action.
             - xpath: xpath expression for better control over selecting the elements to perform the action.
-            - loose_match:  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
+            - loose_match: If loose_match is True then if no element of specified tag is found, all other tags are considered to search for the text, else only specified tag is considered for matching elements. Defaults to True 
 
         :Usage: 
 
@@ -440,7 +440,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         '''Scroll vertically by the specified amount 
 
         :Args: 
-            - amount : positive integer for scrolling down or negative integer for scrolling up  
+            - amount: positive integer for scrolling down or negative integer for scrolling up  
 
         :Usage:
 
@@ -457,7 +457,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         '''Scroll horizontally by the specified amount 
 
         :Args:  
-            - amount : positive integer for scrolling right or negative integer for scrolling left
+            - amount: positive integer for scrolling right or negative integer for scrolling left
             
         :Usage:
 
@@ -476,7 +476,7 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         '''Press any special key or a key combination involving Ctrl , Alt , Shift
 
         :Args: 
-            -key : A key present in Browser().Key added with any other key to get the key combination.
+            -key: A key present in Browser().Key added with any other key to get the key combination.
 
         :Usage:
 
@@ -515,17 +515,17 @@ If the url doesn't contain the protocol of the url  , then by default https is c
         Types the text into an input field 
 
         :Args:
-            - text  : The text to type in the input field.
-            - into  : This can be any placeholder or name or value that is seen inside the input text box as seen in a browser. If not specified , other params are considered or the first input field is selected.
-            - clear : Clears the input field before typing the text . Defaults to True 
-            - tag   : The html tag to consider for the input field (eg : textarea) , defaults to 'input' 
-            - id    : id of the element to which the text must be sent
-            - classname : Any class of the input element to consider while selecting the input element to send the keys to. 
-            - number : if there are multiple elements matching the criteria of other parameters , number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action . 
-            - multiple : if True , the specified action is performed on all the elements matching the criteria and not just the first element . If it is true , number parameter is ignored . Defaults to False 
-            - css_selector : css_selector expression for better control over selecting the elements to perform the action.
-            - xpath : xpath expression for better control over selecting the elements to perform the action.
-            - loose_match :  If loose_match is True then if no element of specified tag is found  , all other tags are considered to search for the text , else only specified tag is considered for matching elements. Defaults to True 
+            - text: The text to type in the input field.
+            - into: This can be any placeholder or name or value that is seen inside the input text box as seen in a browser. If not specified, other params are considered or the first input field is selected.
+            - clear: Clears the input field before typing the text. Defaults to True 
+            - tag: The html tag to consider for the input field (eg: textarea), defaults to 'input' 
+            - id: id of the element to which the text must be sent
+            - classname: Any class of the input element to consider while selecting the input element to send the keys to. 
+            - number: if there are multiple elements matching the criteria of other parameters, number specifies which element to select for the operation. This defaults to 1 and selects the first element to perform the action. 
+            - multiple: if True, the specified action is performed on all the elements matching the criteria and not just the first element. If it is true, number parameter is ignored. Defaults to False 
+            - css_selector: css_selector expression for better control over selecting the elements to perform the action.
+            - xpath: xpath expression for better control over selecting the elements to perform the action.
+            - loose_match: If loose_match is True then if no element of specified tag is found, all other tags are considered to search for the text, else only specified tag is considered for matching elements. Defaults to True 
 
         :Usage: 
 
