@@ -333,8 +333,13 @@ class Browser:
 
     def __reset_error(self ):
         self.errors = list() ; 
-
-
+      
+      
+    def new_tab(self, url='https://google.com'):
+        '''Opens a new tab.'''
+        self.driver.execute_script(f"window.open('{url}');")
+       
+       
     def get_total_tabs(self):
         '''Gets the total number of tabs or windows that is currently open '''
         return len(self.driver.window_handles) ; 
