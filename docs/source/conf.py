@@ -14,8 +14,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../webbot'))
 
+sys.path.insert(0, os.path.abspath('../../webbot'))
 
 # -- Project information -----------------------------------------------------
 
@@ -27,7 +27,6 @@ author = 'Natesh M Bhat'
 version = ''
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -69,7 +68,6 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -104,7 +102,6 @@ html_static_path = ['_static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'webbotdoc'
 
-
 # -- Options for LaTeX output ------------------------------------------------
 
 latex_elements = {
@@ -133,7 +130,6 @@ latex_documents = [
      'Natesh M Bhat', 'manual'),
 ]
 
-
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
@@ -142,7 +138,6 @@ man_pages = [
     (master_doc, 'webbot', 'webbot Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -154,6 +149,5 @@ texinfo_documents = [
      author, 'webbot', 'One line description of project.',
      'Miscellaneous'),
 ]
-
 
 # -- Extension configuration -------------------------------------------------
