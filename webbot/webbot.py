@@ -46,7 +46,7 @@ class Browser:
             driverfilename = 'chrome_windows.exe'
         elif sys.platform == 'darwin':
             driverfilename = 'chrome_mac'
-        driverpath = os.path.join(os.path.split(__file__)[0], f'drivers{os.path.sep}{driverfilename}')
+        driverpath = os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep, driverfilename))
 
         os.chmod(driverpath, 0o755)
 
@@ -167,7 +167,8 @@ class Browser:
                             element.tag_name == 'input' and element.get_attribute('type') == 'hidden'):
                         continue
 
-                    '''accessing id or class attribute of stale element("like that input tag which in is google.com page")
+                    '''accessing id or class attribute of stale element
+                    ("like that input tag which in is google.com page")
                     raises this exception'''
                 except exceptions.StaleElementReferenceException as E:
                     self.__set_error(E, element)
@@ -187,7 +188,7 @@ class Browser:
 
         def find_input_element_for_label(elementlist, score):
             """This method finds the input tag elements by taking in the label elements and assigns the score
-            argument to the new found input elements and puts them in the  element to score mapping """
+            argument to the new found input elements and puts them in the  element to score mapping. """
 
             for element in elementlist:
                 if not element.is_displayed:
@@ -293,8 +294,7 @@ class Browser:
             element_fetch_helper(
                 '''//body//input[contains(translate(@name , 'USERNAME' , 'username' )  , 'username') or contains(
                 translate(@name ,'EMAIL' , 'email' ) , 'email') or contains(translate(@name , 'LOGIN' , 'login'  ) , 
-                'login' ) or contains(translate(@type , 'EMAIL' , 'email') , 'email')] ''',
-                53)
+                'login' ) or contains(translate(@type , 'EMAIL' , 'email') , 'email')] ''', 53)
 
         if tag == 'input':
             handle_input_tag()
@@ -351,7 +351,7 @@ class Browser:
         return self._max_score_elements_
 
     def __set_error(self, Exceptionerror, element=None, message=''):
-        """Set the error in case of any exception occured whenever performing any action like click or type. """
+        """Set the error in case of any exception occured whenever performing any action like click or type."""
         self.errors.append({'Exceptionerror': Exceptionerror, 'element': element, 'message': message})
 
     def __reset_error(self):
@@ -362,7 +362,7 @@ class Browser:
         self.driver.execute_script(f"window.open('{url}');")
 
     def get_total_tabs(self):
-        """Gets the total number of tabs or windows that is currently open """
+        """Gets the total number of tabs or windows that is currently open."""
         return len(self.driver.window_handles)
 
     def switch_to_tab(self, number):
@@ -574,11 +574,10 @@ class Browser:
            driver = Browser()
            driver.go_to('mail.google.com')
 
-           driver.type('Myemail@gmail.com' , into = 'Email' )
-           driver.type('mysecretpassword' , into = 'Password' , id = 'passwordfieldID' )
-           driver.type("hello" , tag='span' , number = 2 ) ;  # if there are multiple elements,
-           then 2nd one is considered for operation (since number parameter is 2 ).
-
+           driver.type('Myemail@gmail.com', into = 'Email')
+           driver.type('mysecretpassword', into = 'Password' , id = 'passwordfieldID' )
+           driver.type("hello", tag='span', number = 2 )   '''if there are multiple elements,
+           then 2nd one is considered for operation (since number parameter is 2 )'''.
         """
 
         self.__reset_error()
