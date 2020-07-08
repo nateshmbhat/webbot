@@ -19,18 +19,15 @@ class Browser:
     **Constructor**
 
     :__init__(showWindow = True):
-        The constructor takes showWindow flag as argument which Defaults to False. If it is set to true , all browser
-         happen without showing up any GUI window.
-
+        The constructor takes showWindow flag as argument which Defaults to False. If it is set to true,
+         all browser happen without showing up any GUI window.
 
     Object attributes:  Key , errors
 
     :Key:
         - It contains the constants for all the special keys in the keyboard which can be used in the *press* method
-
     errors:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
-
     """
 
     def __init__(self, showWindow=True):
@@ -55,7 +52,7 @@ class Browser:
 
         self.driver = webdriver.Chrome(executable_path=driverpath, options=options)
         self.Key = Keys
-        self.errors = list()
+        self.errors = []
 
         [setattr(self, function, getattr(self.driver, function)) for function in
          ['add_cookie', 'delete_all_cookies', 'delete_cookie', 'execute_script', 'execute_async_script',
@@ -97,12 +94,12 @@ class Browser:
         """ Gets the html source code for the current webpage """
         return self.driver.page_source
 
-    def find_elements(self, text='', tag='button', id='', classname='', css_selector='', xpath='',
+    def find_elements(self, text='', tag='button', id='', number=1, classname='', css_selector='', xpath='',
                       loose_match=True):
         """Returns a list of elements that best fit the given parameters"""
-        return self.__find_element(text, tag, classname, id, css_selector, xpath, loose_match)
+        return self.__find_element(text, tag, classname, id, number, css_selector, xpath, loose_match)
 
-    def exists(self, text='', tag='button', id='', classname='', css_selector='', xpath='', loose_match=True):
+    def exists(self, text='', tag='button', id='', classname='', number=1, css_selector='', xpath='', loose_match=True):
         """
         Check if an element exists or not.
 
@@ -119,10 +116,14 @@ class Browser:
 
             - classname : Any class of the element to search for.
 
+            - number : if there are multiple elements matching the criteria of other parameters,
+              number specifies which element to select for the operation.
+              This defaults to 1 and selects the first element to perform the action.
+
             - multiple : Defaults to False.
               If True, the specified action is performed on all the elements matching
               the criteria and not just the first element.
-              If it is true , number parameter is ignored.
+              If it is true, number parameter is ignored.
 
             - css_selector : css_selector expression for better control over selecting the elements to perform the action.
 
@@ -146,9 +147,9 @@ class Browser:
         """
 
         return True if len(
-            self.__find_element(text, tag, classname, id, css_selector, xpath, loose_match)) else False
+            self.__find_element(text, tag, classname, id, number, css_selector, xpath, loose_match)) else False
 
-    def __find_element(self, text, tag, classname, id, css_selector, xpath, loose_match):
+    def __find_element(self, text, tag, classname, id, number, css_selector, xpath, loose_match):
         """Returns a list of elements that best fit the given parameters"""
 
         self.element_to_score = OrderedDict()
@@ -166,8 +167,8 @@ class Browser:
                             element.tag_name == 'input' and element.get_attribute('type') == 'hidden'):
                         continue
 
-                    # accessing id or class attribute of stale element("like that input tag which in is google.com page ")
-                    # raises this exception
+                    '''accessing id or class attribute of stale element("like that input tag which in is google.com page")
+                    raises this exception'''
                 except exceptions.StaleElementReferenceException as E:
                     self.__set_error(E, element)
                     continue
@@ -186,7 +187,7 @@ class Browser:
 
         def find_input_element_for_label(elementlist, score):
             """This method finds the input tag elements by taking in the label elements and assigns the score
-            argument to the new found input elements and puts them in the  elemenet to score mapping """
+            argument to the new found input elements and puts them in the  element to score mapping """
 
             for element in elementlist:
                 if not element.is_displayed:
@@ -229,7 +230,6 @@ class Browser:
                                                                                                text.lower(),
                                                                                                text.lower())),
                     score=33)
-
             else:
                 element_fetch_helper("//body//{}".format(tag), score=40)
 
@@ -238,7 +238,7 @@ class Browser:
                 element_fetch_helper(("//body//{}[text()='{}']".format(tagvar, text)), score=45)
                 element_fetch_helper(("//body//{}//*[text()='{}']".format(tagvar, text)), score=45)
 
-                add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(text)), score=43);
+                add_to_init_text_matches_score(self.driver.find_elements_by_link_text("{}".format(text)), score=43)
 
                 element_fetch_helper(("//body//{}[contains(text() , '{}')]".format(tagvar, text)), score=37)
                 element_fetch_helper(("//body//{}//*[contains(text() , '{}')]".format(tagvar, text)), score=37)
@@ -316,7 +316,7 @@ class Browser:
             handle_loose_check()
 
         if not len(self.element_to_score.keys()):
-            self.__set_error('Element not found ! ', message="There is no element that matches your search criteria.")
+            self.__set_error('Element not found !', message="There is no element that matches your search criteria.")
             return []
 
         for element in self.element_to_score.keys():
@@ -351,7 +351,7 @@ class Browser:
         return self._max_score_elements_
 
     def __set_error(self, Exceptionerror, element=None, message=''):
-        """Set the error in case of any exception occured whenever performing any action like click or type """
+        """Set the error in case of any exception occured whenever performing any action like click or type. """
         self.errors.append({'Exceptionerror': Exceptionerror, 'element': element, 'message': message})
 
     def __reset_error(self):
@@ -366,8 +366,9 @@ class Browser:
         return len(self.driver.window_handles)
 
     def switch_to_tab(self, number):
-        """Switch to the tab corresponding to the number argument. The tabs are numbered in the order that they are opened by the web driver.
-So changing the order of the tabs in the browser won't change the tab numbers.
+        """Switch to the tab corresponding to the number argument.
+         The tabs are numbered in the order that they are opened by the web driver.
+        So changing the order of the tabs in the browser won't change the tab numbers.
         """
         assert len(
             self.driver.window_handles) >= number > 0, \
@@ -376,8 +377,7 @@ So changing the order of the tabs in the browser won't change the tab numbers.
         self.driver.switch_to.window(self.driver.window_handles[number - 1])
 
     def go_back(self):
-        """Go back to the previous URL. It's same as clicking the back button in browser .
-        """
+        """Go back to the previous URL. It's same as clicking the back button in browser."""
         self.driver.back()
 
     def go_forward(self):
@@ -386,9 +386,7 @@ So changing the order of the tabs in the browser won't change the tab numbers.
 
     def go_to(self, url):
         """Open the webpage corresponding to the url given in the parameter.
-
-        If the url doesn't contain the protocol of the url  , then by default https is considered
-
+        If the url doesn't contain the protocol of the url, then by default https is considered.
         """
         if not re.match(r'\w+://.*', url):
             if url[:4] == "www.":
@@ -435,13 +433,13 @@ So changing the order of the tabs in the browser won't change the tab numbers.
            driver = Browser()
            driver.go_to('google.com')
 
-           driver.click('Sign In') ;
-           driver.click('Sign In' , tag='span' ) ;
-           driver.click(id = 'elementid') ;
+           driver.click('Sign In')
+           driver.click('Sign In', tag='span' )
+           driver.click(id = 'elementid')
 
-           # if there are multiple elements matching the text "NEXT" , then 2'nd element is clicked (since number paramter is 2 ) .
-           driver.click("NEXT" , tag='span' , number = 2 ) ;
-
+           # if there are multiple elements matching the text "NEXT",
+            then 2'nd element is clicked (since number parameter is 2 ).
+           driver.click("NEXT" , tag='span' , number = 2 )
         """
 
         self.__reset_error()
@@ -450,7 +448,7 @@ So changing the order of the tabs in the browser won't change the tab numbers.
             ActionChains(self.driver).click().perform()
             return
 
-        maxElements = self.__find_element(text, tag, classname, id, css_selector, xpath, loose_match)
+        maxElements = self.__find_element(text, tag, classname, id, number, css_selector, xpath, loose_match)
 
         temp_element_index_ = 1
 
@@ -577,9 +575,9 @@ So changing the order of the tabs in the browser won't change the tab numbers.
            driver.go_to('mail.google.com')
 
            driver.type('Myemail@gmail.com' , into = 'Email' )
-           driver.type('mysecretpassword' , into = 'Password' , id = 'passwdfieldID' )
+           driver.type('mysecretpassword' , into = 'Password' , id = 'passwordfieldID' )
            driver.type("hello" , tag='span' , number = 2 ) ;  # if there are multiple elements,
-           then 2nd one is considered for operation (since number paramter is 2 ).
+           then 2nd one is considered for operation (since number parameter is 2 ).
 
         """
 
@@ -588,7 +586,7 @@ So changing the order of the tabs in the browser won't change the tab numbers.
             ActionChains(self.driver).send_keys(text).perform()
             return
 
-        maxElements = self.__find_element(into, tag, classname, id, css_selector, xpath, loose_match)
+        maxElements = self.__find_element(into, tag, classname, id, number, css_selector, xpath, loose_match)
 
         temp_element_index_ = 1
 
