@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/logo.svg?sanitize=true" width="250px">
+  <img src=".github/logo.svg?sanitize=true" width="250px" height="250px">
 </p>
 
 <h2 align="center"> 🤖 Crazy Smart Web automation and testing library for python </h2>
