@@ -1,8 +1,13 @@
 # webbot 
+<p align="center">
+  <img src=".github/logo.svg?sanitize=true" width="250px">
+</p>
+
+<h2 align="center"> 🤖 Crazy Smart Web automation and testing library for python </h2>
+
 
 [![Downloads](https://pepy.tech/badge/webbot)](https://pepy.tech/project/webbot) ![Downloads](https://pepy.tech/badge/webbot/week)    [![](https://img.shields.io/readthedocs/webbot.svg?style=plastic)](https://webbot.readthedocs.io/en/latest/)  [![](https://img.shields.io/github/languages/code-size/nateshmbhat/webbot.svg?style=plastic)](https://github.com/nateshmbhat/webbot)  [![](https://img.shields.io/github/license/nateshmbhat/webbot?style=plastic)](https://github.com/nateshmbhat/webbot) [![](https://img.shields.io/pypi/v/webbot.svg?style=plastic)](https://github.com/nateshmbhat/webbot) [![](https://img.shields.io/github/languages/top/nateshmbhat/webbot.svg?style=plastic)](https://github.com/nateshmbhat/webbot) [![](https://img.shields.io/badge/author-nateshmbhat-green.svg)](https://github.com/nateshmbhat)
 
-Web automation library for python for web browser automation and end to end UI testing.
 
 webbot provides a much feature rich automation than selenium for all kinds of automation of webpage. Since the major portion of web automation is to perform actions like click and type into webpage elements , webbot automatically handles finding the right elements to perform the actions.
 
@@ -89,6 +94,7 @@ web.click('Post')
 <br>
 
 ## Links : 
++ Read the dev article about this library : https://dev.to/nateshmbhat/automate-your-web-pages-with-webbot-without-much-code-6ih
 
 + Full Documentation : https://webbot.readthedocs.io
 + Project home  : https://github.com/nateshmbhat/webbot
