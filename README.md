@@ -1,4 +1,3 @@
-# webbot 
 <p align="center">
   <img src=".github/logo.svg?sanitize=true" width="250px">
 </p>
