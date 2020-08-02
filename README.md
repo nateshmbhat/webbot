@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/logo.svg?sanitize=true" width="250px">
+  <img src=".github/logo.svg?sanitize=true" width="230px" height="230px">
 </p>
 
 <h2 align="center"> 🤖 Crazy Smart Web automation and testing library for python </h2>
@@ -10,15 +10,15 @@
 
 webbot provides a much feature rich automation than selenium for all kinds of automation of webpage. Since the major portion of web automation is to perform actions like click and type into webpage elements , webbot automatically handles finding the right elements to perform the actions.
 
-<br>
-
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/nateshmbhat"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee 😇"><span style="margin-left:5px;font-size:19px !important;">Buy me a coffee 😇</span></a>
 
 ## Features : 
 
-+ Use any combination of selectors like id, name, text, css etc to perform actions on elements with one line of code. 
-+ Automate and test pages loaded dynamically by javascript. 
 + Click any button or link without having to worry about finding the element first or knowing css_selectors , xpath etc
++ Automate and test pages loaded dynamically by javascript. 
 + Smart scoring algorithm which finds the best matching elements on which you want to perform the action . 
++ The entire automation process can be made without having to open the browser window i.e in the background as a console process (see docs for more details )
++ Use any combination of selectors like id, name, text, css etc to perform actions on elements with one line of code. 
 + Automation designed to work even in case of webpages with dynamically changing id and classname
 + Immensely minimizes the code required for performing input actions like clicks and keyboard actions. 
 + Get webpage source , cookies , total tabs , webpage title etc..
@@ -26,12 +26,6 @@ webbot provides a much feature rich automation than selenium for all kinds of au
 + Bidirectional scrolling
 + Perform an action on webpage elements by applying various filters to select the elements . 
 + Perfrom action on multiple elements at once.
-+ If certain elements don't have text or visible property , then use either their id , class , css_selector , xpath , tag etc.
-+ The entire automation process can be made without having to open the browser window i.e in the background as a console process (see docs for more details )
-
-
-
-<br>
 
 ------------
 
