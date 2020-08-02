@@ -1,7 +1,7 @@
 import platform
 from setuptools import setup
 
-VERSION="0.21"
+VERSION="0.33"
 
 with open('README.rst' , 'r' , encoding='utf-8') as f:
     long_description = f.read() 
@@ -17,7 +17,7 @@ setup(
     author = 'Natesh M Bhat' ,
     url = 'https://github.com/nateshmbhat/webbot',
     author_email = 'nateshmbhatofficial@gmail.com' ,
-    keywords=['webbot', 'selenium' , 'autoweb','automate' , 'automation' ,'web' , 'autoweb' , 'auto' , 'pyauto', 'pyautogui'],
+    keywords=['webbot', 'selenium' , 'autoweb','automate' , 'automation','pyttsx3','bs4' , 'beautiful soup' ,'web' , 'autoweb' , 'auto' , 'pyauto', 'pyautogui'],
     classifiers = [
           'Environment :: Console',
           'Intended Audience :: End Users/Desktop',
