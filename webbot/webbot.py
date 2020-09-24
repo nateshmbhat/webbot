@@ -18,9 +18,15 @@ class Browser:
 
     **Constructor**
 
-    :__init__(showWindow = True):
-        The constructor takes showWindow flag as argument which Defaults to False. If it is set to true,
-         all browser happen without showing up any GUI window.
+
+    :__init__(showWindow = True , proxy = None):
+        The constructor takes showWindow flag as argument which Defaults to False. If it is set to true , all browser happen without showing up any GUI window .
+
+        :Args:
+            - showWindow : If true , will run a headless browser without showing GUI window.
+            - proxy : Url of any optional proxy server.
+
+
 
     Object attributes:  Key , errors
 
@@ -32,9 +38,14 @@ class Browser:
 
     def __init__(self, showWindow=True):
 
+
+    def __init__(self , showWindow = True , proxy = None ):
         options = webdriver.ChromeOptions()
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage") ;
+        options.add_argument("--no-sandbox") ;
+        if(proxy is not None and isinstance(proxy , str)):
+            options.add_argument("--proxy-server={}".format(proxy)) ;
+
 
         if not showWindow:
             options.headless = True
