@@ -1,13 +1,17 @@
-import platform
 from setuptools import setup
+
+
 
 VERSION="0.33"
 
-with open('README.rst' , 'r' , encoding='utf-8') as f:
-    long_description = f.read() 
+
+with open('README.rst', 'r', encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='webbot',
+
+
     packages = ['webbot','webbot.drivers'] ,
     version = VERSION , 
     long_description = long_description , 
@@ -33,4 +37,5 @@ setup(
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7'
           ] 
+
 )

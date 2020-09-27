@@ -105,3 +105,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 webbot/scratchPad_only_for_copy_pasting.py
+.idea/
