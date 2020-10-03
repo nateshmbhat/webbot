@@ -36,16 +36,12 @@ class Browser:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
     """
 
-    def __init__(self, showWindow=True):
-
-
-    def __init__(self , showWindow = True , proxy = None ):
+    def __init__(self, showWindow=True, proxy=None):
         options = webdriver.ChromeOptions()
-        options.add_argument("--disable-dev-shm-usage") ;
-        options.add_argument("--no-sandbox") ;
-        if(proxy is not None and isinstance(proxy , str)):
-            options.add_argument("--proxy-server={}".format(proxy)) ;
-
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        if proxy is not None and isinstance(proxy, str):
+            options.add_argument("--proxy-server={}".format(proxy))
 
         if not showWindow:
             options.headless = True
@@ -57,7 +53,7 @@ class Browser:
             driverfilename = 'chrome_windows.exe'
         elif sys.platform == 'darwin':
             driverfilename = 'chrome_mac'
-        driverpath = os.path.join(os.path.split(__file__)[0] , 'drivers{0}{1}'.format(os.path.sep, driverfilename))
+        driverpath = os.path.join(os.path.split(__file__)[0], 'drivers{0}{1}'.format(os.path.sep, driverfilename))
 
         os.chmod(driverpath, 0o755)
 
