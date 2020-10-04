@@ -1,6 +1,7 @@
 import os
 import re
 import string
+import errno
 import sys
 from collections import OrderedDict
 
@@ -36,10 +37,17 @@ class Browser:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
     """
 
-    def __init__(self, showWindow=True, proxy=None):
+    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None):
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
+        if downloadPath is not None and isinstance(downloadPath,str):
+            absolutePath = os.path.abspath(downloadPath)
+            if(not os.path.isdir(absolutePath)):
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), absolutePath)
+
+            options.add_experimental_option('prefs', {'download.default_directory' : absolutePath})
+
         if proxy is not None and isinstance(proxy, str):
             options.add_argument("--proxy-server={}".format(proxy))
 
