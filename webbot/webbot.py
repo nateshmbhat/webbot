@@ -52,6 +52,7 @@ class Browser:
             options.add_argument("--proxy-server={}".format(proxy))
 
         if not showWindow:
+            options.headless = True
             options.add_argument("--headless")
 
         driverfilename = ''
