@@ -4,6 +4,7 @@ import string
 import errno
 import sys
 from collections import OrderedDict
+from typing import List
 
 from selenium import webdriver
 from selenium.common import exceptions
@@ -26,6 +27,7 @@ class Browser:
         :Args:
             - showWindow : If true , will run a headless browser without showing GUI window.
             - proxy : Url of any optional proxy server.
+            - argArray : Array of argument options to be appended to the selenium driver
 
 
 
@@ -37,23 +39,22 @@ class Browser:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
     """
 
-    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None):
+    def __init__(self, showWindow=True, proxy=None, downloadPath: str = None, argArray: List[str]):
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
-        if downloadPath is not None and isinstance(downloadPath,str):
+        if downloadPath is not None and isinstance(downloadPath, str):
             absolutePath = os.path.abspath(downloadPath)
             if(not os.path.isdir(absolutePath)):
                 raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), absolutePath)
 
-            options.add_experimental_option('prefs', {'download.default_directory' : absolutePath})
+            options.add_experimental_option('prefs', {'download.default_directory': absolutePath})
 
         if proxy is not None and isinstance(proxy, str):
             options.add_argument("--proxy-server={}".format(proxy))
 
         if not showWindow:
             options.headless = True
-            options.add_argument("--headless")
 
         driverfilename = ''
         if sys.platform == 'linux' or sys.platform == 'linux2':
@@ -65,6 +66,9 @@ class Browser:
         driverpath = os.path.join(os.path.split(__file__)[0], 'drivers{0}{1}'.format(os.path.sep, driverfilename))
 
         os.chmod(driverpath, 0o755)
+
+        for arg in argArray:
+            options.add_argument(arg)
 
         self.driver = webdriver.Chrome(executable_path=driverpath, options=options)
         self.Key = Keys
@@ -246,7 +250,7 @@ class Browser:
                     "//body//label[contains(translate( text() , '{}' , '{}' ) , '{}')]".format(text.upper(),
                                                                                                text.lower(),
                                                                                                text.lower())),
-                    score=33)
+                                             score=33)
             else:
                 element_fetch_helper("//body//{}".format(tag), score=40)
 
@@ -515,7 +519,6 @@ class Browser:
         self.driver.execute_script("window.scrollBy( {}, 0 );".format(amount))
 
     def press(self, key):
-
         """Press any special key or a key combination involving Ctrl , Alt , Shift
 
         :Args:
