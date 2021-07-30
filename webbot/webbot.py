@@ -482,6 +482,77 @@ class Browser:
                 self.__set_error(E, element, ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
                 '''.format(element.tag_name, element.id, element.get_attribute('class'), element.get_attribute('id')))
 
+    def context_click(self, text='', tag='button', id='', classname='', number=1, css_selector='', xpath='', loose_match=True,
+              multiple=False):
+        """
+       Clicks one or more elements on the webpage.
+
+        :Args:
+            - text: The text of the element that needs to be clicked.
+
+            - tag: The html tag of the element to be clicked (eg: button, a), defaults to 'button'.
+
+            - id: id of the element.
+
+            - classname: Any class of the element to consider while selecting the element to click.
+
+            - number: If there are multiple elements matching the criteria of other parameters,
+              number specifies which element to select for the operation.
+              This defaults to 1 and selects the first element to perform the action.
+
+            - multiple: Defaults to False.
+              If True, the specified action is performed on all the elements matching the criteria and not just the first element.
+              If it is true, number parameter is ignored.
+
+            - css_selector: css_selector expression for better control over selecting the elements to perform the action.
+
+            - xpath: xpath expression for better control over selecting the elements to perform the action.
+
+            - loose_match: Defaults to True.
+              If loose_match is True then if no element of specified tag is found,
+              all other tags are considered to search for the text,
+              else only specified tag is considered for matching elements.
+
+        :Usage:
+
+        .. code-block:: python
+
+           driver = Browser()
+           driver.go_to('google.com')
+
+           driver.click('Sign In')
+           driver.click('Sign In', tag='span' )
+           driver.click(id = 'elementid')
+
+           # if there are multiple elements matching the text "NEXT",
+            then 2'nd element is clicked (since number parameter is 2 ).
+           driver.context_click("NEXT" , tag='span' , number = 2 )
+        """
+
+        self.__reset_error()
+
+        if not (text or id or classname or css_selector or xpath):
+            ActionChains(self.driver).context_click().perform()
+            return
+
+        maxElements = self.__find_element(text, tag, classname, id, number, css_selector, xpath, loose_match)
+
+        temp_element_index_ = 1
+
+        for element in maxElements:
+            try:
+                if element.is_displayed() and element.is_enabled():
+                    if (number == temp_element_index_) or multiple:
+                        ActionChains(self.driver).context_click(element).perform()
+                        if not multiple:
+                            break
+                    temp_element_index_ += 1
+
+            except Exception as E:
+                self.__set_error(E, element, ''' tagname : {} , id : {}  , classname : {} , id_attribute : {}
+                '''.format(element.tag_name, element.id, element.get_attribute('class'), element.get_attribute('id')))
+
+                
     def scrolly(self, amount):
         """Scroll vertically by the specified amount
 
