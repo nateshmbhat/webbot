@@ -38,10 +38,12 @@ class Browser:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
     """
 
-    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, driverPath:str=None):
+    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, driverPath:str=None, arguments=["--disable-dev-shm-usage","--no-sandbox"]):
         options = webdriver.ChromeOptions()
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--no-sandbox")
+
+        for argument in arguments:
+            options.add_argument(argument)
+
         if downloadPath is not None and isinstance(downloadPath,str):
             absolutePath = os.path.abspath(downloadPath)
             if(not os.path.isdir(absolutePath)):
@@ -55,10 +57,13 @@ class Browser:
                 raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), driverPath)
 
         if proxy is not None and isinstance(proxy, str):
-            options.add_argument("--proxy-server={}".format(proxy))
+            # Check if '--proxy-server' has not yet been set
+            if not any(arg.starts_with("--proxy-server") for arg in arguments):
+                options.add_argument("--proxy-server={}".format(proxy))
 
-        if not showWindow:
+        if not showWindow and '--headless' not in arguments:
             options.headless = True
+            options.add_argument("--headless")
 
         if driverPath is None:
             driverfilename = ''
