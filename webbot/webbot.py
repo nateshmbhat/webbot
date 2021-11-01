@@ -24,7 +24,7 @@ class Browser:
         The constructor takes showWindow flag as argument which Defaults to False. If it is set to true , all browser happen without showing up any GUI window .
 
         :Args:
-            - showWindow : If true , will run a headless browser without showing GUI window.
+            - showWindow : If false , will run a headless browser without showing GUI window.
             - proxy : Url of any optional proxy server.
 
 
