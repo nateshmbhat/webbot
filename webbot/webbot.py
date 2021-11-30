@@ -48,7 +48,10 @@ class Browser:
             if(not os.path.isdir(absolutePath)):
                 raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), absolutePath)
 
-            options.add_experimental_option('prefs', {'download.default_directory' : absolutePath})
+            options.add_experimental_option('prefs', {
+                "download.default_directory" : absolutePath,
+                "download.prompt_for_download": False,
+                "plugins.always_open_pdf_externally": True})
 
         if proxy is not None and isinstance(proxy, str):
             # Check if '--proxy-server' has not yet been set
