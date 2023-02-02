@@ -38,7 +38,7 @@ class Browser:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
     """
 
-    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, driverPath:str=None, arguments=["--disable-dev-shm-usage","--no-sandbox"]):
+    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, driverPath:str=None, arguments=["--disable-dev-shm-usage","--no-sandbox"], binaryLocation:str=None):
         options = webdriver.ChromeOptions()
 
         for argument in arguments:
@@ -53,8 +53,14 @@ class Browser:
             
         if driverPath is not None and isinstance(driverPath,str):
             driverPath = os.path.abspath(driverPath)
-            if(not os.path.isdir(driverPath)):
+            if(not os.path.isfile(driverPath)):
                 raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), driverPath)
+
+        if binaryLocation is not None and isinstance(binaryLocation,str):
+            binaryLocation = os.path.abspath(binaryLocation)
+            if(not os.path.isfile(binaryLocation)):
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), binaryLocation)
+            options.binary_location = binaryLocation
 
         if proxy is not None and isinstance(proxy, str):
             # Check if '--proxy-server' has not yet been set
