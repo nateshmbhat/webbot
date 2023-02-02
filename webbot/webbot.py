@@ -53,7 +53,7 @@ class Browser:
             
         if driverPath is not None and isinstance(driverPath,str):
             driverPath = os.path.abspath(driverPath)
-            if(not os.path.isdir(driverPath)):
+            if(not os.path.isfile(driverPath)):
                 raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), driverPath)
 
         if proxy is not None and isinstance(proxy, str):
