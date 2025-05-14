@@ -38,8 +38,12 @@ class Browser:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
     """
 
-    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, driverPath:str=None, arguments=["--disable-dev-shm-usage","--no-sandbox"], binaryLocation:str=None):
+    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, incognito=False, driverPath:str=None, binaryLocation:str=None, arguments=["--disable-dev-shm-usage","--no-sandbox"]):
         options = webdriver.ChromeOptions()
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        if incognito:
+            options.add_argument("--incognito")
 
         for argument in arguments:
             options.add_argument(argument)
