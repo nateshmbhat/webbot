@@ -24,8 +24,9 @@ class Browser:
         The constructor takes showWindow flag as argument which Defaults to False. If it is set to true , all browser happen without showing up any GUI window .
 
         :Args:
-            - showWindow : If true , will run a headless browser without showing GUI window.
+            - showWindow : If false , will run a headless browser without showing GUI window.
             - proxy : Url of any optional proxy server.
+            - driverPath: can specify the path of an alternative chromedriver
 
 
 
@@ -37,37 +38,51 @@ class Browser:
         - List containing all the errors which might have occurred during performing an action like click ,type etc.
     """
 
-    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, incognito=False):
+
+    def __init__(self, showWindow=True, proxy=None , downloadPath:str=None, incognito=False, driverPath:str=None, arguments=["--disable-dev-shm-usage","--no-sandbox"]):
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--no-sandbox")
         if incognito:
             options.add_argument("--incognito")
+
+        for argument in arguments:
+            options.add_argument(argument)
+
         if downloadPath is not None and isinstance(downloadPath,str):
             absolutePath = os.path.abspath(downloadPath)
             if(not os.path.isdir(absolutePath)):
                 raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), absolutePath)
-
+                
             options.add_experimental_option('prefs', {'download.default_directory' : absolutePath})
+            
+        if driverPath is not None and isinstance(driverPath,str):
+            driverPath = os.path.abspath(driverPath)
+            if(not os.path.isdir(driverPath)):
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), driverPath)
 
         if proxy is not None and isinstance(proxy, str):
-            options.add_argument("--proxy-server={}".format(proxy))
+            # Check if '--proxy-server' has not yet been set
+            if not any(arg.starts_with("--proxy-server") for arg in arguments):
+                options.add_argument("--proxy-server={}".format(proxy))
 
-        if not showWindow:
+        if not showWindow and '--headless' not in arguments:
             options.headless = True
+            options.add_argument("--headless")
 
-        driverfilename = ''
-        if sys.platform == 'linux' or sys.platform == 'linux2':
-            driverfilename = 'chrome_linux'
-        elif sys.platform == 'win32':
-            driverfilename = 'chrome_windows.exe'
-        elif sys.platform == 'darwin':
-            driverfilename = 'chrome_mac'
-        driverpath = os.path.join(os.path.split(__file__)[0], 'drivers{0}{1}'.format(os.path.sep, driverfilename))
+        if driverPath is None:
+            driverfilename = ''
+            if sys.platform == 'linux' or sys.platform == 'linux2':
+                driverfilename = 'chrome_linux'
+            elif sys.platform == 'win32':
+                driverfilename = 'chrome_windows.exe'
+            elif sys.platform == 'darwin':
+                driverfilename = 'chrome_mac'
+            driverPath = os.path.join(os.path.split(__file__)[0], 'drivers{0}{1}'.format(os.path.sep, driverfilename))
 
-        os.chmod(driverpath, 0o755)
+            os.chmod(driverPath, 0o755)
 
-        self.driver = webdriver.Chrome(executable_path=driverpath, options=options)
+        self.driver = webdriver.Chrome(executable_path=driverPath, options=options)
         self.Key = Keys
         self.errors = []
 
