@@ -1,0 +1,243 @@
+RealCandleBot - Quotex & Pocket Option (Real prediction system)
+
+Files included below. Save each section as separate files as instructed.
+
+---------- README.md ----------
+
+RealCandleBot
+
+This project provides a real-time candle prediction system for mobile use with Quotex / Pocket Option charts. It contains:
+
+FastAPI server (signal generation, WebSocket for live signals)
+
+Simple rule-based predictor (EMA + RSI heuristics) in predictor.py
+
+Telegram notifier (telegram_bot.py)
+
+Browser userscript (userscript.js) to scrape OHLC from chart DOM and send to server
+
+Minimal mobile web UI (index.html) to view signals
+
+
+Important safety & legal notes:
+
+This code does NOT interact with user accounts or place trades automatically.
+
+Scraping or automating interactions with trading platforms may violate their Terms of Service. Use at your own risk.
+
+No guarantee of profit. Use small amounts and test extensively on demo accounts.
+
+
+How it works (high-level):
+
+1. userscript running in your mobile browser reads the latest closed candle OHLC and sends it to server via POST /ingest.
+
+
+2. The server appends the candle to a local stream and runs predictor to decide next candle: BULL/BEAR/NEUTRAL.
+
+
+3. Server broadcasts result to connected clients via WebSocket and optionally sends Telegram alerts.
+
+
+4. Mobile UI or Telegram receives signals in near real-time.
+
+
+
+Quick start (local/dev):
+
+1. Install Python 3.11+ and pip.
+
+
+2. pip install -r requirements.txt
+
+
+3. Run: uvicorn server:app --host 0.0.0.0 --port 8000
+
+
+4. Expose to internet for mobile using ngrok (or use VPS): ngrok http 8000
+
+
+5. Install userscript in Tampermonkey (or similar) in your mobile browser and set SERVER_URL to your ngrok URL.
+
+
+
+---------- requirements.txt ----------
+
+minimal requirements
+
+fastapi uvicorn[standard] python-multipart pydantic numpy pandas python-telegram-bot==20.6 websockets
+
+---------- server.py ----------
+
+from fastapi import FastAPI, WebSocket, Request from fastapi.responses import HTMLResponse from pydantic import BaseModel from typing import List import predictor import asyncio import uvicorn import time
+
+app = FastAPI()
+
+in-memory candle store (keep recent N candles)
+
+CANDLES: List[dict] = [] MAX_CANDLES = 200
+
+clients = set()
+
+class Candle(BaseModel): timestamp: float  # epoch seconds of candle close open: float high: float low: float close: float volume: float = 0.0
+
+@app.post('/ingest') async def ingest(c: Candle): global CANDLES CANDLES.append(c.dict()) if len(CANDLES) > MAX_CANDLES: CANDLES = CANDLES[-MAX_CANDLES:] # run prediction asynchronously pred = predictor.predict_next(CANDLES) payload = { 'prediction': pred, 'timestamp': time.time(), 'last_candle': CANDLES[-1] } await broadcast(payload) return {'ok': True, 'prediction': pred}
+
+@app.get('/candles') async def get_candles(): return {'candles': CANDLES}
+
+@app.websocket('/ws') async def websocket_endpoint(ws: WebSocket): await ws.accept() clients.add(ws) try: while True: data = await ws.receive_text() # echo or ignore (clients usually only receive) except Exception: pass finally: clients.remove(ws)
+
+async def broadcast(payload: dict): remove = [] for ws in clients: try: await ws.send_json(payload) except Exception: remove.append(ws) for r in remove: clients.remove(r)
+
+if name == 'main': uvicorn.run('server:app', host='0.0.0.0', port=8000, reload=True)
+
+---------- predictor.py ----------
+
+Simple rule-based predictor using EMA and RSI heuristics.
+
+import numpy as np import pandas as pd
+
+def compute_ema(series, span): return series.ewm(span=span, adjust=False).mean()
+
+def compute_rsi(series, period=14): delta = series.diff() up = delta.clip(lower=0) down = -1 * delta.clip(upper=0) ma_up = up.rolling(period).mean() ma_down = down.rolling(period).mean() rs = ma_up / (ma_down + 1e-9) rsi = 100 - (100 / (1 + rs)) return rsi
+
+def predict_next(candles): # candles: list of dict with 'open','high','low','close' if len(candles) < 20: return 'NEUTRAL'  # not enough data df = pd.DataFrame(candles) close = df['close'] ema_short = compute_ema(close, span=8) ema_long = compute_ema(close, span=21) rsi = compute_rsi(close, period=14)
+
+last_idx = len(df)-1
+ema_short_last = ema_short.iloc[last_idx]
+ema_long_last = ema_long.iloc[last_idx]
+rsi_last = rsi.iloc[last_idx]
+
+# simple rules:
+# bullish if short EMA > long EMA and recent candles mostly green and RSI not overbought
+recent = df['close'].diff().iloc[-5:]
+green_count = (recent > 0).sum()
+
+if ema_short_last > ema_long_last and green_count >= 3 and rsi_last < 75:
+    return 'BULL'
+if ema_short_last < ema_long_last and green_count <= 2 and rsi_last > 25:
+    return 'BEAR'
+return 'NEUTRAL'
+
+---------- telegram_bot.py ----------
+
+Optional: sends alerts to your Telegram chat when a signal is generated.
+
+Configure TELEGRAM_TOKEN and CHAT_ID before running.
+
+import requests import threading import time
+
+TELEGRAM_TOKEN = '<YOUR_TELEGRAM_BOT_TOKEN>' CHAT_ID = '<YOUR_CHAT_ID>' SERVER_URL = 'http://localhost:8000'
+
+def send_telegram(text): if TELEGRAM_TOKEN.startswith('<'): return url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage' payload = {'chat_id': CHAT_ID, 'text': text} try: requests.post(url, data=payload, timeout=5) except Exception as e: print('tg error', e)
+
+naive poller: poll server /candles and run local predictor
+
+def poll_and_notify(interval=1.5): last_pred = None while True: try: r = requests.get(SERVER_URL + '/candles', timeout=5) data = r.json() from predictor import predict_next pred = predict_next(data.get('candles', [])) if pred != last_pred and pred in ('BULL','BEAR'): send_telegram(f'New signal: {pred} at {time.ctime()}') last_pred = pred except Exception as e: print('poll error', e) time.sleep(interval)
+
+if name == 'main': t = threading.Thread(target=poll_and_notify, daemon=True) t.start() while True: time.sleep(1)
+
+---------- userscript.js ----------
+
+// Userscript (Tampermonkey / Violentmonkey) to read last closed candle from chart DOM // This is a template — sites differ, so you will need to adapt selectors for Quotex / Pocket Option.
+
+// ==UserScript== // @name         Candle Ingestor for Trading Sites // @namespace    http://tampermonkey.net/ // @version      0.1 // @description  Scrape last candle data and POST to server // @match        ://.qux*/* // @match        ://.pocketoption*/* // @grant        none // ==/UserScript==
+
+(function() { 'use strict';
+
+// Set this to your server public URL (e.g., from ngrok)
+const SERVER_URL = 'https://REPLACE_WITH_YOUR_SERVER.ngrok.io';
+
+// Adjust depending on how chart data is accessible
+function extractCandleFromDOM() {
+    // Example: if the site exposes window.chart or similar
+    try {
+        // Attempt common places
+        if (window.tvWidget && window.tvWidget.activeChart) {
+            const series = window.tvWidget.activeChart().data();
+            const last = series[series.length-1];
+            return {timestamp: Math.floor(last.time/1000), open: last.open, high: last.high, low: last.low, close: last.close, volume: last.volume || 0};
+        }
+    } catch(e){}
+
+    // Fallback: try to read textual DOM elements (site-specific) — user will need to customize
+    return null;
+}
+
+let lastTs = 0;
+setInterval(async () => {
+    const c = extractCandleFromDOM();
+    if (!c) return;
+    if (c.timestamp === lastTs) return; // already sent that candle
+    lastTs = c.timestamp;
+    try {
+        await fetch(SERVER_URL + '/ingest', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(c)
+        });
+        console.log('sent candle', c);
+    } catch (e) {
+        console.error('send error', e);
+    }
+}, 900); // check every 900ms
+
+})();
+
+---------- index.html ----------
+
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealCandleBot - Live Signals</title>
+  <style>
+    body{font-family: Arial, sans-serif;padding:12px}
+    .card{padding:12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.12);margin-bottom:8px}
+    .bull{color:green}
+    .bear{color:red}
+  </style>
+</head>
+<body>
+  <h2>RealCandleBot - Live Signals</h2>
+  <div id="status" class="card">Connecting...</div>
+  <div id="signal" class="card">No signal yet</div>
+  <script>
+    const WS = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+    const status = document.getElementById('status');
+    const signal = document.getElementById('signal');
+    WS.onopen = () => { status.innerText = 'Connected to server'; }
+    WS.onmessage = (ev) => {
+       const data = JSON.parse(ev.data);
+       signal.innerHTML = '<b>Prediction:</b> ' + data.prediction + '<br><small>' + new Date(data.timestamp*1000).toLocaleString() + '</small>';
+       signal.className = 'card ' + (data.prediction === 'BULL' ? 'bull' : data.prediction === 'BEAR' ? 'bear' : '');
+    }
+    WS.onclose = () => { status.innerText = 'Disconnected'; }
+  </script>
+</body>
+</html>---------- NOTES.txt ----------
+
+Next steps for you (summary):
+
+1) Deploy server on a VPS or locally and expose via ngrok.
+
+2) Install Tampermonkey on mobile browser and paste userscript.js, set SERVER_URL.
+
+3) Start server: uvicorn server:app --host 0.0.0.0 --port 8000
+
+4) Open index.html on your phone (or point browser to server host) to see live signals.
+
+5) (Optional) Configure Telegram bot token in telegram_bot.py and run it.
+
+If you want, I can:
+
+- Customize the userscript selectors for Quotex / Pocket Option if you provide the page HTML or tell me which chart library they use.
+
+- Improve predictor (ML model) if you provide labeled historical candles (CSV).
+
+- Package the project into a one-click deploy script for a low-cost VPS.
+
+End of project files
+
